@@ -653,7 +653,7 @@ void sv4guiSeg2DEdit::CreateManualCircle(bool)
 
 * sv4gui_QmitkDataManagerView.h
 
-  302行
+  63行，302行
 
 * sv4gui_QmitkDataManagerView.cxx
 
@@ -663,5 +663,126 @@ void sv4guiSeg2DEdit::CreateManualCircle(bool)
 
   86行
 
+# 2019/8/17
+
+## SimVascular
+
+### 研究过程中收集的资料
+
+* 几种访问selected data node的方法：
+
+  ```QmitkDataManagerView``` 
+
+  ```cpp
+  //方法1
+  void sv4guiQmitkDataManagerView::RemoveSelectedNodes( bool ){
+    QModelIndexList indexesOfSelectedRowsFiltered = m_NodeTreeView->selectionModel()->selectedRows();
+    QModelIndexList indexesOfSelectedRows;
+    for (int i = 0; i < indexesOfSelectedRowsFiltered.size(); ++i)
+    {
+      indexesOfSelectedRows.push_back(m_FilterModel->mapToSource(indexesOfSelectedRowsFiltered[i]));
+    }
+    for (QModelIndexList::iterator it = indexesOfSelectedRows.begin()
+      ; it != indexesOfSelectedRows.end(); it++)
+    {
+      node = m_NodeTreeModel->GetNode(*it);
+    }
+  }
+  //方法2
+  void sv4guiQmitkDataManagerView::OpacityChanged(int value){
+      mitk::DataNode* node = m_NodeTreeModel->GetNode(m_FilterModel->mapToSource(m_NodeTreeView->selectionModel()->currentIndex()));
+  }
+  ```
+
+  ```sv4gui_WorkbenchWindowAdvisor```
+
+  ```cpp
+  //方法3
+  std::list< mitk::DataNode::Pointer > sv4guiWorkbenchWindowAdvisor::GetSelectedDataNodes()
+  {
+      berry::ISelectionService* selectionService =window->GetSelectionService();
+      mitk::DataNodeSelection::ConstPointer nodeSelection = selectionService->GetSelection().Cast<const mitk::DataNodeSelection>();
+      return nodeSelection->GetSelectedDataNodes();
+  }
+  ```
+
+* 我可以直接通过``page->ShowView("org.sv.views.segmentation2d");``这种方式展示view；我可以通过直接传入参数调用sv4gui_2DEdit的OnSelectionChanged()函数以及发送信号``reslicePositionChanged(int))``；我可以通过``QList<mitk::DataNode::Pointer> allNodes = m_NodeTreeModel->GetNodeSet();``访问所有data node，并找到action；我可以通过修改``void sv4guiSeg2DEdit::CreateManualCircle(bool)``来画contour；剩下的就是访问``pubVesselRadius.txt``文件来得到半径。我还要知道path的data node中的数据是以什么方式存储。
+
+  还有，为了创建contour group，要重载``sv4gui_ContourGroupCreateAction``里的run函数。在此之前，看看create contour group的实现。.......事实证明：还是不要给源码中的virtual函数重载。
+
+* ``sv4guiPath* selectedPath=dynamic_cast<sv4guiPath*>(selectedPathNode->GetData());``通过这种方式，将data node转为sv4guiPath类型；
+
+  ```sv4gui_PathLegacyIO```
+
+  ```cpp
+  sv4guiPathElement* pe = new sv4guiPathElement();
+  path->SetPathElement(pe);
+  //原来在从文件中读入path时，一个sv4guiPath保存一个sv4guiPathElement,只要操作sv4guiPathElement。
+  ```
+
+  ``sv3_PathElement``
+
+  ```cpp
+  PathElement::PathPoint PathElement::GetPathPoint(int index){}
+  //得到一个path point
+  
+  std::array<double,3> PathElement::GetPathPosPoint(int index){}
+  //得到一个path point的3维坐标点。
+  
+  int PathElement::GetPathPointNumber(){}
+  //得到所有path point的个数
+  ```
+
+  ``sv4gui_Seg2DEdit``
+
+  ```cpp
+  void sv4guiSeg2DEdit::ManualCircleContextMenuRequested(const QPoint &pos) //slot
+  {
+      connect(&action1, SIGNAL(triggered()), this, SLOT(CreateManualCircle()));
+  }
+  //看来必须在这里connect的时候，顺便emit,执行create circle操作
+  
+  void sv4guiSeg2DEdit::CreateQtPartControl( QWidget *parent )
+  {
+      connect( ui->btnCircle,SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(ManualCircleContextMenuRequested(const QPoint&)) );
+  }
+  //要找到ui
+  ```
+
   
 
+### 问题
+
+1. mitk::DataNode::Pointer node; 怎么让node为空
+
+   sv4guiQmitkDataManagerView::GetPathNodeByName(string name)
+
+2. mitk::DataNode::Pointer与mitk::DataNode*之间的转换是什么？
+
+   sv4gui_WorkbenchWindowAdvisor 的1112行
+
+# 2019/8/18
+
+## SimVascular
+
+### 研究过程中收集的资料
+
+```sv4gui_ModelEdit```
+
+```cpp
+//modeling过程
+connect(ui->btnUpdateModel, SIGNAL(clicked()), this, SLOT(ShowSegSelectionWidget()) );//-->
+connect(m_SegSelectionWidget,SIGNAL(accepted()), this, SLOT(CreateModel()));//-->
+void sv4guiModelEdit::CreateModel(){}; //-->
+m_SegSelectionWidget; //-->
+QAction* useAllAction=m_NodeMenu->addAction("Use All");
+QObject::connect( useAllAction, SIGNAL( triggered(bool) ) , this, SLOT( UseAll(bool) ) );//-->
+
+```
+
+### 问题
+
+我按照我认为的对的操作实验以下，找3个段的血管（1个父亲，两个儿子）用manual create circle方法segmentation，但是画的模型跟我预想的不一样，我怀疑可能是以下方面出问题了：
+
+* 对manually create circle中的参数x,y的理解有问题
+* .paths文件中的rotation项有问题

@@ -32,3 +32,29 @@
 
   在进行下行转换时，dynamic_cast具有类型检查的功能，比 static_cast更安全。向下转换的成功与否还与将要转换的类型有关，即要转换的指针指向的对象的实际类型与转换以后的对象类型一定要相同，否则转换失败。
 
+# 类
+
+```cpp
+class A {
+public:
+	virtual void foo() {
+		cout << "A called" << endl;
+	}
+};
+class B: public A {
+public:
+	void foo() {
+		cout << "B1 called" << endl;
+	}
+	void foo(int a) {
+		cout << "B2 called" << endl;
+	}
+};
+int main(int argc, char* argv[])
+{
+	A* a = new B();
+	a->foo(1); //错误的。
+}
+//很不幸，这种做法是错的，重写的函数（基类中此函数未重载）在子类重载后，基类的指针不能访问到重载的那个函数。
+```
+
