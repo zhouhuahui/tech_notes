@@ -66,5 +66,75 @@ res: None
       print(n)
   ```
 
-  
+
+# list
+
+list是一个可变的有序表，可以向list中追加元素
+
+```python
+classmates = list()
+classmates.append('zhouhuahui')
+```
+
+插入到指定位置
+
+```python
+classmates.insert(1,'Jack') #前提是list要至少长度为2
+```
+
+删除元素
+
+```python
+classmates.pop() #删除末尾元素
+classmates.pop(2) #删除索引为2的元素
+```
+
+# dict
+
+创建一个空的字典
+
+```python
+d = {} #以后慢慢赋值
+```
+
+字典中是否有某个键，用in
+
+```python
+print(5 in d)
+```
+
+
+
+# string与数字之间的转换
+
+## 数字到字符串
+
+1. 使用格式化字符串的方法
+
+   ```python
+   i = 322
+   s = '%d' %i
+   # %f:浮点数；%e:科学计数
+   ```
+
+2. ```str(5)```
+
+## 字符串到数字
+
+1. ```python
+   import string
+   s = '88'
+   i = string.atoi(s)
+   f = string.atof(s) #转为浮点数
+   ```
+
+2.  ``int('88')``
+
+# python内置函数
+
+## dir()
+
+```python
+dir(obj) #查看对象obj的属性和方法
+```
 

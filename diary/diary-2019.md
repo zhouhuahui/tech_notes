@@ -417,7 +417,7 @@ QSignalMapper* signalMapper = new QSignalMapper(this);
 //*****
 
 /*
-我似乎并没有在sv4guiMainWindwo中找到关于File, Edit, Window等这些menu的设置代码。
+我似乎并没有在sv4guiMainWindow中找到关于File, Edit, Window等这些menu的设置代码。
 但是我又在sv4gui_WorkbenchWindowAdvisor中找到蛛丝马迹，原来：
 是在sv4gui_WorkbenchWindowAdvisor中写了那些比较常规的GUI控件，里面还写了IPartListener
 */
@@ -786,3 +786,97 @@ QObject::connect( useAllAction, SIGNAL( triggered(bool) ) , this, SLOT( UseAll(b
 
 * 对manually create circle中的参数x,y的理解有问题
 * .paths文件中的rotation项有问题
+
+# 2019/8/26
+
+## 看论文
+
+### The HAM10000 Dataset: A Large Collection of Multi-Source Dermatoscopic Images of Common Pigmented Skin Lesions
+
+1. 摘要部分（Abstract）：
+
+   动机（被迫于什么原因），
+
+   做了什么事，
+
+   具体怎么做的（``Given this diversity we had to apply diﬀerent acquisition and cleaning methods and developed semiautomatic workﬂows utilizing speciﬁcally trained neural networks.``），
+
+   最后的结果是什么样，
+
+   这个结果有什么实际用处。
+
+2. Background & Summary
+
+   过去在`` small sample size``的情况下训练神经网络的局限性以及现在硬件的发展
+
+   具体解释了自己的数据集在当前环境下发行的必要性（训练神经网络要大量图片，过去的数据集有种种不足，还有自己的数据集发行在很好的网站）
+
+   具体解释了做``a classifier for multiple diseases `` 的必要性（二分类不能满足现实中复杂的疾病种类的检测需要）
+
+3. Methods
+
+   具体解释了由raw images到规范的数据集所用到的方法
+
+4. Data Records 
+
+   解释了了methods，还要具体解释用这些methods处理的图片或数据的数据源。
+
+## 如何写大创论文
+
+我觉得写从相机拍摄视频到最终预测轨迹的整个过程：相机矫正，测距以及预测
+
+# 2019/8/27
+
+## SimVascular
+
+### 若编译成功，需要提前放好什么文件
+
+1. ~/SVProject
+2. ~/SVProject/Paths/0.paths
+3. ~/SVProject/Paths/radius.txt
+
+# 2019/8/29
+
+## SimVascular
+
+**目前，放弃通过修改源码来自动化得到模型文件的方法，转用pthon接口**
+
+## SimVascular-Tests
+
+<https://github.com/SimVascular/SimVascular-Tests/blob/master/python_demos/PathDemo.py>
+
+### PathDemo.py
+
+```python
+#import to visualize in the repository
+GUI.ImportPathFromRepos('path1')
+GUI.ImportPathFromRepos('path1','Paths')
+#在软件的python控制台下运行以上代码会提示error并退出整个程序
+```
+
+# 2019/8/30
+
+## SimVascular-Tests
+
+**我今天才发现**：
+
+1. SV的坐标系设置与我在做眼球血管遍历时用的坐标系不一致，需要坐标变换，变到SV的坐标系
+
+   (x0, y0, z0) ---> (x0, z0, height-y0) (其中，z0必须是深度，且深度越深，值越小，height是血管照片的高度)
+
+2.  在SV的manually create circle按钮实现的功能中，输入的x,y是在血管切线法平面上相对于中心点（path point）的偏移值
+
+**总结**
+
+1. 使用python接口发现不知道怎么loft，官方教程很不详细，我只能找python接口的源码以及loft的源码来看。
+
+2. 用软件来试着生成一个有3个path的model时，无法生成（两个儿子的第一个point是父亲的最后一个point），这个问题可能直接导致自动化生成眼球血管的model（眼球血管很复杂）的失败。但是create model时用``OpenCASCADE``的Model Type会生成。
+
+3. loft有讲究，若直接loft，即使成功生成model，父亲和儿子的交点处会有问题（官网教程又讲）
+
+   <http://simvascular.github.io/docsModelGuide.html#modelingImportingExportingPaths>
+
+4. 若直接修改源码，除了不能找到view对象之外，还要更改一个地方：不能直接import .paths文件，而要通过``add manully``的方式，这样会更好，而且SV坐标系和我的坐标系不同。
+
+**2019/8/16的日记有重要信息**
+
