@@ -1,5 +1,7 @@
 # 使用keras的基本框架
 
+<https://keras.io/> keras官方文档
+
 ```python
 import numpy as np 
 import os
@@ -25,7 +27,9 @@ model.fit_generator(train_generator,steps_per_epoch=,epochs=,callbacks=					[mod
 model.predict_generator(test_generator)
 ```
 
-# keras.preprocessing.ImageDataGenerator生成器的flow_from_directory的用法
+# keras模块
+
+## keras.preprocessing.ImageDataGenerator生成器的flow_from_directory的用法
 
 可从**keras文档**中了解一些，方便产生分批batch_size数量的图片。ImageDataGenerator还有其他的生成图片的方法。突然想起了以前使用过离线keras官方文档的技巧。
 
@@ -66,6 +70,43 @@ history = model.fit_generator(
 '''
 很多方面和上面相同，只是在产生train_generator时，有所不同，用了两个生成器，分别产生图片和分割图片(标签)。
 '''
+```
+
+```python
+def trainGenerator(batch_size,train_path,image_folder,mask_folder,aug_dict,image_color_mode = "grayscale",
+                    mask_color_mode = "grayscale",image_save_prefix  = "image",mask_save_prefix  = "mask",
+                    flag_multi_class = False,num_class = 2,save_to_dir = None,target_size = (256,256),seed = 1):
+    '''
+    can generate image and mask at the same time
+    use the same seed for image_datagen and mask_datagen to ensure the transformation for image and mask is the same
+    if you want to visualize the results of generator, set save_to_dir = "your path"
+    '''
+    image_datagen = ImageDataGenerator(**aug_dict)
+    mask_datagen = ImageDataGenerator(**aug_dict)
+    image_generator = image_datagen.flow_from_directory(
+        train_path,
+        classes = [image_folder],
+        class_mode = None,
+        color_mode = image_color_mode,
+        target_size = target_size,
+        batch_size = batch_size,
+        save_to_dir = save_to_dir,
+        save_prefix  = image_save_prefix,
+        seed = seed)
+    mask_generator = mask_datagen.flow_from_directory(
+        train_path,
+        classes = [mask_folder],
+        class_mode = None,
+        color_mode = mask_color_mode,
+        target_size = target_size,
+        batch_size = batch_size,
+        save_to_dir = save_to_dir,
+        save_prefix  = mask_save_prefix,
+        seed = seed)
+    train_generator = zip(image_generator, mask_generator)
+    for (img,mask) in train_generator:
+        img,mask = adjustData(img,mask,flag_multi_class,num_class)
+        yield (img,mask)
 ```
 
 keras可以在训练过程中自动计算accuracy

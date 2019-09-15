@@ -89,6 +89,16 @@ classmates.pop() #删除末尾元素
 classmates.pop(2) #删除索引为2的元素
 ```
 
+list相加
+
+```python
+a = [1,2]
+b = [3,4]
+print(a+b) #[1,2,3,4]
+```
+
+
+
 # dict
 
 创建一个空的字典
@@ -136,5 +146,30 @@ print(5 in d)
 
 ```python
 dir(obj) #查看对象obj的属性和方法
+```
+
+# os模块
+
+``os.path.join()``
+
+```python
+import os
+
+path1 = 'home'
+path2 = 'a.txt'
+print(os.path.join(path1,path2)) #home\a.txt
+path2 = 'doc'
+path3 = 'a.txt'
+print(os.path.join(path1,path2,path3)) #home\doc\a.txt
+```
+
+# str
+
+## 分割函数
+
+```python
+s = 'dlrblist'
+a = s.split("l",1) #从左到右找，只分割一次
+a = s.rsplit("l",1) #从右向左找，只分割一次
 ```
 

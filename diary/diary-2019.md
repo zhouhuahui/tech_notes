@@ -880,3 +880,188 @@ GUI.ImportPathFromRepos('path1','Paths')
 
 **2019/8/16的日记有重要信息**
 
+# 2019/9/1
+
+## SimVascular
+
+``sv4gui_DefaultPerspective``
+
+```cpp
+class sv4guiDefaultPerspective : public QObject, public berry::IPerspectiveFactory
+{
+    void CreateInitialLayout(berry::IPageLayout::Pointer layout){
+    	layout->AddView("org.sv.views.datamanager", berry::IPageLayout::LEFT, 0.2f, editorArea);
+    	berry::IPlaceholderFolderLayout::Pointer bottomFolder = layout->CreatePlaceholderFolder("bottom", berry::IPageLayout::BOTTOM, 0.7f, editorArea);
+    	bottomFolder->AddPlaceholder("org.blueberry.views.logview");
+    bottomFolder->AddPlaceholder("org.mitk.views.modules");
+
+    	layout->AddPerspectiveShortcut("org.mitk.extapp.defaultperspective");
+    	layout->AddPerspectiveShortcut("org.mitk.mitkworkbench.perspectives.editor");
+    	layout->AddPerspectiveShortcut("org.mitk.mitkworkbench.perspectives.visualization");
+    }
+}
+```
+
+sv4guiDefaultPerspective与berry::IPage是双向依赖的。
+
+```cpp
+sv4gui_AppWorkbenchWindowAdvisor
+```
+
+```cpp
+class SV_QT_APPLICATION sv4guiWorkbenchWindowAdvisor : public QObject, public berry::WorkbenchWindowAdvisor
+//这个类继承自WorkbenchWindowAdvisor，而且重写了父类的PostWindowCreate(),PreWindowOpen(),PostWindowOpen()等函数，除此之外，它还定义了一系列父类没有的方法和属性，如void ShowMemoryIndicator(bool show),用于控制界面的布局，但是它的对外接口没有新加的函数和属性（返回父类的引用），因为外部只关心那几个在父类中的函数会怎么实现。因此，新加的函数和属性肯定是在父类已经存在的函数中发挥作用的。
+{
+	void PostWindowCreate(){
+		//IViewRegistry可以从注册信息中得到IViewDescriptor,它是类的描述（描述信息写在plugin.xml中）以方便后续的实例化。在这里viewDescriptors是很多view和结点树中结点的action
+		berry::IViewRegistry* viewRegistry = berry::PlatformUI::GetWorkbench()->GetViewRegistry();
+    const QList<berry::IViewDescriptor::Pointer> viewDescriptors = viewRegistry->GetViews();
+	}
+	
+	void AddCustomMenuItemsForDataManager(){
+		//所有Data Node的修饰器类
+		QmitkNodeDescriptor* unknownDataNodeDescriptor =  QmitkNodeDescriptorManager::GetInstance()->GetUnknownDataNodeDescriptor();
+		unknownDataNodeDescriptor->AddAction(removeAction);
+	}
+}
+
+```
+
+**好好研究以下项目是如何导入的**
+
+## mitk官方教程
+
+<http://docs.mitk.org/nightly/classmitk_1_1BaseGeometry.html>
+
+# 2019/9/2
+
+## SimVascular
+
+```
+sv4gui_ProjectManager
+```
+
+```cpp
+void AddProject(mitk::DataStorage::Pointer dataStorage, QString projName, QString projParentDir,bool newProject)
+{
+    //产生mitk::DataNode::Pointer(动态类型也不是子类)
+    mitk::DataNode::Pointer pathFolderNode=CreateDataFolder<sv4guiPathFolder>(dataStorage, pathFolderName, projectFolderNode);
+}
+
+template <typename TDataFolder>
+mitk::DataNode::Pointer static CreateDataFolder(mitk::DataStorage::Pointer dataStorage, QString folderName, mitk::DataNode::Pointer projFolderNode=NULL)
+{
+    dataFolderNode=mitk::DataNode::New();
+    typename TDataFolder::Pointer dataFolder=TDataFolder::New();
+    dataFolderNode->SetData(dataFolder);
+    dataStorage->Add(dataFolderNode,projFolderNode);//这一步应该是确定树的层级关系
+}
+```
+
+# 2019/9/7
+
+## 青春痘大小检测项目
+
+```
+//错误
+File "D:\APP\anaconda3\envs\tensorflow-gpu\lib\subprocess.py", line 990, in _execute_child
+    startupinfo)
+FileNotFoundError: [WinError 2] 系统找不到指定的文件。
+
+File "D:\APP\anaconda3\envs\tensorflow-gpu\lib\site-packages\pydot.py", line 1867, in create
+    raise OSError(*args)
+FileNotFoundError: [WinError 2] "dot.exe" not found in path.
+```
+
+原因是没有安装graphviz
+
+<https://graphviz.gitlab.io/_pages/Download/Download_windows.html>
+
+安装后改源代码：在``envs\tensorflow-gpu\Lib\site-packages\pydot.py中的1651行``将``self.prog = 'dot'``改为``self.prog = 'dot.exe'``
+
+# 2019/9/8
+
+## 青春痘大小检测项目
+
+<https://github.com/yuanqing811/ISIC2018>
+
+1. 
+
+   这是ISIC2018比赛的一个选手的开源代码。我在运行他的代码时，用batch_size=1，刚开始运行的好好的，但运行到k_fold=2时说内存不够；我直接跑k_fold=4的，却运行到第2个epoch就报内存错误，很奇怪这个。
+
+   训练时验证的效果不错，怎么用训练后的模型来评估就很差，预测的也不忍直视；而且，苹果手机拍的照片是4通道的，这个算法只支持3通道的，难道要把苹果手机的第4通道删了吗？
+
+   还有，我觉得这个算法没有用交叉验证，只是用了5折验证，然后用5个模型来计算，得到平均值，有点捞。
+
+2. 对于训练的模型差，可能由于我擅自改代码导致的，如果5次5折训练不完，就只训练1次5折就可以了，无所谓。
+
+   400张图片，25个epoch训练的模型不足以检测iphone拍的照片，有两种解决方案：
+
+   ​	（1）训练所有图片，看看效果怎么样
+
+   ​	（2）用opencv来看看能不能找到青春痘所在的大致区域
+
+
+# 2019/9/12
+
+## 青春痘大小检测项目
+
+### ISIC2018图像分割
+
+我在拿同学的模型（用相同的源码跑出来的）来测试时发生的问题。
+
+```
+SystemError: Unknown opcode
+直接拿别人跑好的模型参数在自己的电脑上运行看结果的时候，容易出现这样的报错。
+这可能是由于python版本不一致和keras版本不一致导致的问题。
+```
+
+### github.com/thtrieu/darkflow
+
+这个可以安装，当包使
+
+这是我找到的用yolo的框架，不同于``pjreddie.com/darknet/``，它至少不用编译，我想暂时用这个源码试试，虽然没有pjreddie的好用，但也要尝试以下
+
+我不知道这个的数据集标注的格式是什么，pjreddie的是：``(object-class center.x center.y width height)``。。。。。。果然经过下载<https://pjreddie.com/media/files/VOCtest_06-Nov-2007.tar>(这个框架用于演示的数据集)来看，是一个image对应一个annotation，image和annotation放在两个文件中，annotion的格式是.xml，更重要的是框的格式是(xmin ymin xmax ymax)，**所以要先用yolo mark标注，然后再统一进行处理**
+
+我怀疑很多关于yolo的框架应该是兼容的，在pjreddie中用的各种yolo预训练模型和cfg文件应该是可以用在这个框架的。
+
+#### 运行一下
+
+```
+#安装
+pip install -e .
+#在README中flow -h可以运行，但我不行，可能是因为我在windows中。我发现flow是.py文件（还好不是linux下的可执行文件）,所以我只需python flow -h就可以运行了。
+
+#检测图片
+python flow --imgdir sample_img/ --model cfg/yolov3.cfg --load bin/yolov3.weights --gpu 1.0 --json
+```
+
+
+
+### github.com/qqwweee/keras-yolo3
+
+这个也是基于darknet的，但是要把darknet的.weights模型文件转化为keras的.h5模型文件。
+
+#### 运行一下
+
+```
+#模型的使用都以darknet的yolov3.weights和yolov3.cfg为例。cmd在该仓库根目录下运行
+
+#先转换文件,文件名除了yolo.h5不要是别的（因为它只找名字是yolo.h5的）
+python convert.py yolov3.cfg yolov3.weights model_data/yolo.h5
+##成功
+
+#检测图片,不要被yolo_video迷惑了，它实际上既可以检测图片也可以检测视频，也有很多实用的参数
+python yolo_video.py --input car.jpg --gpu_num 1 --image 
+#成功
+```
+
+# 2018/9/14
+
+## 眼球血管建模
+
+把细化图中多余的血管树（不是最大的树的树）和莫名其妙的小白点给变为黑色的，然后转为伪彩色图；把joints和terminates中不在最大的树中的元素剔除掉。
+
+
+
