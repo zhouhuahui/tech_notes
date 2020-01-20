@@ -58,3 +58,84 @@ int main(int argc, char* argv[])
 //很不幸，这种做法是错的，重写的函数（基类中此函数未重载）在子类重载后，基类的指针不能访问到重载的那个函数。
 ```
 
+### 两个类相互引用
+
+```cpp
+//classA.h
+typedef struct S1 S1;
+typedef struct S2 {
+	S1* s1;
+	string name;
+	S2() {
+       //s1 = new S1();//错的；由于S1在S2后面定义，所以不能在构造函数中这样写，只能在类外初始化s1
+		name = "s2";
+	}
+}S2;
+
+struct S1 {
+	S2* s2;
+	string name;
+	S1() {
+		name = "s1";
+	}
+};
+
+class A {
+public:
+	S1* s1;
+	S2* s2;
+	void print();
+};
+//-------------------------------------------------------
+```
+
+
+
+# algorithm
+
+## sort
+
+使用algorithm中的sort方法可以高效排序，默认升序。
+
+```cpp
+#include<algorithm>
+using namespace std;
+int main(){
+    int a[10] = { 9, 0, 1, 2, 3, 7, 4, 5, 100, 10 };
+    sort(a, a +10);
+    for (int i = 0; i < 10; i++)
+        cout << a[i] << endl;
+    return 0;
+}
+```
+
+```cpp
+//用sort对vector进行排序
+#include<algorithm>
+vector<int> a;
+//插入值
+sort(a.begin(), a.end());
+```
+
+```cpp
+//自定义的结构体排序
+#include<algorithm>
+//从小到大排序
+bool comp(const student &a, const student &b){
+    return a.score < b.score;
+}
+int main(){
+	vector<student> vectorStudents;
+    //插入值    	
+  	sort(vectorStudents.begin(),vectorStudents.end(),comp);
+    
+}
+```
+
+## count
+
+```cpp
+vector<string> vStr;
+int nRet = std::count(vStr.begin(), vStr.end(), "xiaochun");
+```
+

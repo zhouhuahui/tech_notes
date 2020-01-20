@@ -8,3 +8,10 @@ vector<cv::Point>::iterator itJoints2 = joints.begin();
 			itJoints2++;
 	}
 ```
+
+vector中不能放引用。
+
+```cpp
+vector<a*&> //写法是错的
+```
+

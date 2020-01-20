@@ -1,3 +1,21 @@
+# untitled
+
+```python
+#keras运行物体分割模型来计算
+self.sess = keras.backend.get_session()
+self.yolo_model = keras.models.load_model(model_path, compile=False)
+
+out_boxes, out_scores, out_classes = self.sess.run(
+            [self.boxes, self.scores, self.classes],
+            feed_dict={
+                self.yolo_model.input: image_data,
+                self.input_image_shape: [image.size[1], image.size[0]],
+                K.learning_phase(): 0
+            })
+```
+
+
+
 # 使用keras的基本框架
 
 <https://keras.io/> keras官方文档
@@ -110,6 +128,24 @@ def trainGenerator(batch_size,train_path,image_folder,mask_folder,aug_dict,image
 ```
 
 keras可以在训练过程中自动计算accuracy
+
+## keras.applications
+
+参考：<https://blog.csdn.net/sinat_26917383/article/details/72859145>
+
+### include_top=False
+
+是否包含最后的3个全连接层（whether to include the 3 fully-connected layers at the top of the network）。用来做fine-tuning专用，专门开源了这类模型。 
+
+### vgg16
+
+```python
+inputs = keras.layers.Input(shape=input_shape)
+inputs = Lambda(lambda x: keras_vgg16.preprocess_input(x))(inputs)
+base_model = keras_vgg16.VGG16(input_tensor=inputs,
+                               include_top=False,
+                               weights='imagenet') #keras.models.Model对象
+```
 
 
 

@@ -97,6 +97,13 @@ b = [3,4]
 print(a+b) #[1,2,3,4]
 ```
 
+list排序
+
+```python
+subset = list()
+subset.sort(key=lambda x: micFc[x], reverse=True)#按照micFc[x]的值和降序进行排序
+```
+
 
 
 # dict
@@ -148,9 +155,30 @@ print(5 in d)
 dir(obj) #查看对象obj的属性和方法
 ```
 
+## vars()
+
+返回object的属性和属性值的字典对象  
+
+```python
+class A:
+    a = 1
+print(vars(A))
+```
+
+## reversed()
+
+返回一个反转的迭代器，操作对象可以是字符串，元组，range，列表
+
+```python
+a = 'Run'
+print(tuple(reversed(a)))
+```
+
+
+
 # os模块
 
-``os.path.join()``
+### os.path.join()
 
 ```python
 import os
@@ -163,6 +191,15 @@ path3 = 'a.txt'
 print(os.path.join(path1,path2,path3)) #home\doc\a.txt
 ```
 
+### os.listdir()
+
+```python
+import os
+print(os.listdir("D:\pyproject\day21模块"))
+```
+
+
+
 # str
 
 ## 分割函数
@@ -172,4 +209,78 @@ s = 'dlrblist'
 a = s.split("l",1) #从左到右找，只分割一次
 a = s.rsplit("l",1) #从右向左找，只分割一次
 ```
+
+## 其他
+
+```python
+s.endswith(".jpg") #以.jpg结尾
+```
+
+```python
+print("abcxyzXy".find("xy")) #3
+```
+
+```python
+#分割
+print('abcxyzxyopq'.partition('xy')) #('abc', 'xy', 'zxyopq')
+```
+
+
+
+# python调用命令行参数
+
+* ```python
+  import os
+  
+  #Windows返回值为执行命令后shell的返回值,好像没什么用
+  os.system("test.exe 1.bmp")
+  ```
+
+* ```python
+  import os
+  
+  #该方法通过调用管道的方式来实现的，在调用结束后，会返回一个记录调用输出结果的 file 对象
+  pipeline = os.popen("test.exe 1.bmp")
+  print(pipeline.read())
+  ```
+
+* ```python
+  #用于产生子进程，并连接子进程的标准输入输出，功能十分强大，主要用于替代其他几个老的模块和函数
+  import subprocess
+  
+  #shell=True表示子进程的标准输出默认为当前控制台
+  p = subprocess.Popen("test.exe",
+                       shell=True, 
+                      stdout=subprocess.PIPE) 
+  p.wait() #阻塞当前线程直到子进程执行结束
+  result_lines = p.stdout.readlines() #从子进程的标准输出中读取所有行，并存储在一个list中
+  ```
+
+# python数学运算
+
+## decimal包
+
+```python
+rom decimal import Decimal
+#decimal 可以实现精确的数学运算，所以数字用字符串表示
+
+a = Decimal('4.2')
+b = Decimal('2.1')
+c = (a+b)/2
+print(int(c))
+```
+
+# lambda表达式
+
+举个例子
+
+```python
+fname_fn = lambda x:'%s.jpg' % x
+img_fname = fname_fn("image1")
+```
+
+lambda的格式是：``lambda argument_list:expression``    
+argument_list是输入，expression是输出
+
+
 
