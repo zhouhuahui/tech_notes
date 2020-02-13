@@ -139,3 +139,102 @@ vector<string> vStr;
 int nRet = std::count(vStr.begin(), vStr.end(), "xiaochun");
 ```
 
+# cmath
+
+```cpp
+#include<cmath>
+using namespace std;
+round(); //返回浮点数，四舍五入
+```
+
+
+
+# 字符串与数字/浮点数的转换
+
+**字符串转数字**
+
+```cpp
+#include<cstdio>
+char str[] = "1234321";
+int a;
+double b;
+sscanf(str,"%d",&a); //或者sscanf(string.c_str(),"%d",&a);
+scanf(str,"%lf",&b);
+
+char str[] = "AF";
+int a;
+sscanf(str,"%x",&a); //16进制转10进制
+```
+
+**数字转字符串**
+
+```cpp
+#include<cstdio>
+char str[10];
+int a = 1234;
+sprintf(str,"%d",a);
+
+char str[10];
+double a = 123.331;
+sprintf(str,"%.3lf",a);
+```
+
+# c/c++的输入输出流
+
+cin与scanf都都读取到回车，空格，TAB键就结束，回车，空格，TAB不读入
+
+scanf的操作不能有string，因为scanf不支持stl，只能用char* s，或char s[100]
+
+```cpp
+char s[100];
+scanf("%d",&s);
+
+//scanf读取一行中的所有单词并输出
+while(scanf("%s",&s) != EOF){
+    printf("%s",s);
+}
+```
+
+gets(char* buffer) 可以接受一行（忽略换行符)。
+
+**gets的原理与scanf的原理不同，gets读取字符，直到遇到\n; 而scanf先过滤掉非空字符，再读取，直到遇到空字符。gets抛弃\n；scanf接受到非空字符后，遇到空字符，不抛弃**
+
+```cpp
+//对于输入
+//15\n
+//abc de\n
+//有两种方法读取
+//方法I
+scanf("%d\n",&n);
+gets(s);
+//方法II
+scanf("%d",&n);
+gets(s); //过滤掉\n
+gets(s);
+```
+
+**PAT中不能用gets了，只能用fgets**
+
+```cpp
+#include <stdio.h>
+char *fgets(char *s, int size, FILE *stream); //size是自定义读入字符的最大个数，包括\0
+//如果size=5，而输入是abc\n，则缓冲区中为abc\n\0
+//如果size=4，而输入是abc\n，则缓冲区中为abc\0
+//如果size=3，而输入为abc\n，则缓冲区为ab\0
+```
+
+
+
+读取字符时慎用scanf，用cin
+
+```cpp
+char c;
+c = cin.get();
+//可以读取换行符
+```
+
+```cpp
+char s[20];
+cin.get(s,5); //除了'\0'，只能读取4个字符
+```
+

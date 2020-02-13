@@ -1173,13 +1173,13 @@ Canny(src, src, 20, 60, 3);
 
 方案A：``先求出一大段，再按如下方式downsample：使a,b两点的距离大于a,b的半径之和。``。至少可以保证不会扭曲。但是这种方案严重破坏了图像的完整性，因为下图：
 
-![1571750669476](D:\GitRep\tech_notes\diary\diary-2019\image\1571750669476.png)
+![1571750669476](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1571750669476.png)
 
 对于这种情况，会跳过10个点，不仅完整性无法保证，就连支路都无法嵌入进入主干，这是致命的。*注：这个图的情况对loft和union很不利，我怀疑有些loft和union的失败就是由于这个导致的，这就是为什么半径设为一致并且较小比较好做的原因*
 
 方案B：``对于一个大段L，对它进行线性拟合，对L上的每个点的半径组成的序列进行线性拟合，弥补半径算法的缺陷；``
 
-![1571752519185](D:\GitRep\tech_notes\diary\diary-2019\image\1571752519185.png)
+![1571752519185](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1571752519185.png)
 
 # 2019/10/23
 
@@ -1187,7 +1187,7 @@ Canny(src, src, 20, 60, 3);
 
 http://derekmolloy.ie/writing-a-linux-kernel-module-part-1-introduction/
 
-![1571770784687](D:\GitRep\tech_notes\diary\diary-2019\image\1571770784687.png)
+![1571770784687](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1571770784687.png)
 
 `name`（char的ptr）声明为`static`，并初始化为包含字符串“ hello”。您应该避免在内核模块中使用全局变量-这比在应用程序编程中更为重要，因为全局变量在整个内核范围内都是共享的。您应该使用`static`关键字将变量的范围限制在模块内。如果必须使用全局变量，请添加您正在编写的模块唯一的前缀。
 
@@ -1236,24 +1236,24 @@ clean:
 
 测试样例是：4out的前面几段
 
-![IMG_20191026_201004](D:\GitRep\tech_notes\diary\diary-2019\image\IMG_20191026_201004.jpg)
+![IMG_20191026_201004](D:\GitRep\tech_notes\tech_diary\diary-2019\image\IMG_20191026_201004.jpg)
 
 * 测试点全部输入进去, r=0.3后model的结果(文件是4outMaster_step1_C_test.txt):
 
-![1572097755168](D:\GitRep\tech_notes\diary\diary-2019\image\1572097755168.png)
+![1572097755168](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572097755168.png)
 
 * 1,3,4,5输入进去, r=0.3后model的结果(文件是4outMaster_step1_C_test1.txt)：
 
-![1572097945502](D:\GitRep\tech_notes\diary\diary-2019\image\1572097945502.png)
+![1572097945502](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572097945502.png)
 
 * 1输入进去后, r=0.3后model的结果(文件是4outMaster_step1_C_test3.txt):
-  ![1572098795195](D:\GitRep\tech_notes\diary\diary-2019\image\1572098795195.png)
+  ![1572098795195](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572098795195.png)
 
   结果对是对，但是为什么两个端口为什么不能自动是cap，而是还要自己调
 
 * 1,3输入进去，r=0.1后model的结果(文件是4outMaster_step1_C_test3.txt):
 
-  ![1572100848627](D:\GitRep\tech_notes\diary\diary-2019\image\1572100848627.png)
+  ![1572100848627](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572100848627.png)
 
   这个union没有把主干包括进去，而且显示的union中只能对应face list中的2,4,6，剩下的三个face我不知道为什么在显示中看不到。
 
@@ -1261,11 +1261,11 @@ clean:
 
 * 1,3输入进去，r=0.1，使支路有更多的嵌入主干的点，model(对应文件4outMaster_step1_C_test4.txt)：
 
-  ![1572101577753](D:\GitRep\tech_notes\diary\diary-2019\image\1572101577753.png)
+  ![1572101577753](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572101577753.png)
 
   ​	若支路嵌入到主干的所有点不合适，则会造成以上情况。
 
-  ![1572102652378](D:\GitRep\tech_notes\diary\diary-2019\image\1572102652378.png)
+  ![1572102652378](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572102652378.png)
 
   通过更改交叉点来使支路嵌入到主干，但是得到union还是不太对（上图所示，可能嵌入的不太深？）
 
@@ -1273,9 +1273,9 @@ clean:
 
 意味着必须downsample
 
-![1572144487429](D:\GitRep\tech_notes\diary\diary-2019\image\1572144487429.png)
+![1572144487429](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572144487429.png)
 
-![1572144687349](D:\GitRep\tech_notes\diary\diary-2019\image\1572144687349.png)
+![1572144687349](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572144687349.png)
 
 非常完美
 
@@ -1284,7 +1284,7 @@ clean:
 
 ### 目前执行方案C遇到的问题
 
-1. ![1572249610083](D:\GitRep\tech_notes\diary\diary-2019\image\1572249610083.jpg)
+1. ![1572249610083](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572249610083.jpg)
 
    在这里，本来3，2，4段组成一个血管段的，1，5是支路，但由于1，5太接近，才会出现这种这种问题。我选择将3，2，4合并，即使会比较麻烦，**在保证我设计的支路和主干，支路的半径一定要小于等于主干半径的前提下，重排3，2，4段**。
 
@@ -1300,11 +1300,11 @@ clean:
 
 ​	文件是``4outMaster_manully_C_test.txt``
 
-![1572254938899](D:\GitRep\tech_notes\diary\diary-2019\image\1572254938899.png)
+![1572254938899](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572254938899.png)
 
 ​		其他都正常，这里多出来的face是由于主干在交叉点处的过度扭曲导致的（虽然contours没有交叉，但hi是		仍然会出现问题）
 
-​			![1572259959595](D:\GitRep\tech_notes\diary\diary-2019\image\1572259959595.png)
+​			![1572259959595](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572259959595.png)
 
 ​		这个是真难办啊！
 
@@ -1312,7 +1312,7 @@ clean:
 
 文件是``4outMaster_manully_C_test1.txt``
 
-![1572262361305](D:\GitRep\tech_notes\diary\diary-2019\image\1572262361305.png)
+![1572262361305](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572262361305.png)
 
 **可以通过调节角度得到合适的faces**
 
@@ -1326,18 +1326,18 @@ clean:
 
 文件是4outMaster_manully_C_test2.txt
 
-![1572263832491](D:\GitRep\tech_notes\diary\diary-2019\image\1572263832491.png)
+![1572263832491](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572263832491.png)
 
 图中出错点附近的半径分布为：1.4->1->1.2   
 其实这也不算错，就是不好看一点
 
 #### 测试2
 
-![IMG_20191029_124112](D:\GitRep\tech_notes\diary\diary-2019\image\IMG_20191029_124112.JPG)
+![IMG_20191029_124112](D:\GitRep\tech_notes\tech_diary\diary-2019\image\IMG_20191029_124112.JPG)
 
 文件是4outMaster_manully_C_test4.txt
 
-![1572324145728](D:\GitRep\tech_notes\diary\diary-2019\image\1572324145728.png)
+![1572324145728](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1572324145728.png)
 
 这个效果很好
 
@@ -1370,7 +1370,7 @@ downsample策略：
 
 #### 曲线拟合+线性规划
 
-![IMG_20191031_191605](D:\GitRep\tech_notes\diary\diary-2019\image\IMG_20191031_191605.jpg)
+![IMG_20191031_191605](D:\GitRep\tech_notes\tech_diary\diary-2019\image\IMG_20191031_191605.jpg)
 
 还有，score函数不好定义。所以说动态规划在这里不太好用，只能舍弃
 
@@ -1382,17 +1382,17 @@ downsample策略：
 
 **4out的(303,25)**
 
-![1573457601268](D:\GitRep\tech_notes\diary\diary-2019\image\1573457601268.png)
+![1573457601268](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573457601268.png)
 
 在这个情况中，错误识别了主干；在model和extract faces过程中有概率出现错误
 
-![1573459600824](D:\GitRep\tech_notes\diary\diary-2019\image\1573459600824.png)
+![1573459600824](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573459600824.png)
 
 将本该是支路的识别为主干；整个大段半径参差不齐，若全部设为平均值，则丢失了很大一部分信息，若有意去平滑半径，且能反应半径变化趋势，则有点难。
 
 **4out的(453,302)**
 
-![1573461474379](D:\GitRep\tech_notes\diary\diary-2019\image\1573461474379.png)
+![1573461474379](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573461474379.png)
 
 在大段的末尾点应该有半径缩小的，但是这里没有。
 
@@ -1400,7 +1400,7 @@ downsample策略：
 
 我又有了一个好点子：迭代法。我以前的思路：考虑小段之间的半径和夹角关系，能基本上组织主干支路关系。但有时，也免不了出现错误。
 
-![1573457601268](D:\GitRep\tech_notes\diary\diary-2019\image\1573457601268.png)
+![1573457601268](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573457601268.png)
 
 这个就是把实际意义上的支路和主干合并到逻辑主干了。
 
@@ -1410,13 +1410,13 @@ downsample策略：
 
 **我已经写完了一级视野reorganise的代码**
 
-![1573568375979](D:\GitRep\tech_notes\diary\diary-2019\image\1573568375979.png)
+![1573568375979](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573568375979.png)
 
 当我测试部分大段+采用对大段的降采样的时候，出现了上图所示问题。
 
 经过分析，这是由于我在合并两条大段时（merge），代码逻辑出现问题，导致该插入到大段后面的小段插入到大段前面了。
 
-![1573571069727](D:\GitRep\tech_notes\diary\diary-2019\image\1573571069727.png)
+![1573571069727](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573571069727.png)
 
 我为什么会丢失掉一些段呢？
 
@@ -1424,9 +1424,9 @@ downsample策略：
 
 Reorganise算法+不降采样 前20个大段的loft（由于全部运行会出现pypath exists的错误）
 
-![1573916858165](D:\GitRep\tech_notes\diary\diary-2019\image\1573916858165.png)
+![1573916858165](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573916858165.png)
 
-![1573920969897](D:\GitRep\tech_notes\diary\diary-2019\image\1573920969897.png)
+![1573920969897](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1573920969897.png)
 
 这个错误产生的原因是上图所示的情况：一个环组成了一个大段，**这种情况是在我写一级视野重排的基础上产生的**。其实虽然我的代码不具有永久的鲁棒性，因为没有自动检测上图所示情况或者其他错误情况，但是按照我的代码逻辑，不太可能这样组织大段啊。
 
@@ -1660,3 +1660,38 @@ RNAfold.exe <test1.fa >test1_res.txt
 
 ![1575680122876](D:\GitRep\tech_notes\tech_diary\diary-2019\image\1575680122876.png)
 
+# V2ray
+
+## 2019/1/20
+
+我在网上找一些关于订阅结点的信息，相关网站在下面
+
+https://tlanyan.me/v2ray-clients-download/
+
+https://www.jianshu.com/p/201d31f4e19a
+
+https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-1682224481089703&output=html&h=90&w=730&bih=706&biw=1519&adx=205&ady=187&ga_vid=591225309.1579496768&ga_sid=1579496768&ga_hid=1421603256&slotname=9600592429&adk=3272952280&url=https://www.yiyult.com/201903145664.html&ref=https://www.baidu.com/link%3Furl%3DVevd8MOyzS5JPXDhOldPQj92IPsjK71FZj7Ie_EadBDOqGsXLZRIRQkKLPiUQwcu7H53TEMNMTMqOMkHRe2NLK%26wd%3D%26eqid%3Df2a27c710022e108000000035e25326e&frm=20&guci=2.2.0.0.2.2.0.0&eid=44712934&u_his=1&u_nplug=3&u_nmime=4&brdim=0,0,0,0,1536,0,1536,824,1536,706&prev_fmts=fpkc_al_lp&format=fpkc_al_lp&kw_type=radlink&hl=zh-CN&random=1579497043220&rt=ChBeJTZTAANeZAqWvRf5Br9CEgEgGghtMnuRjQcgsygBOAdSEwjphLeBtZHnAhWONZYKHTQ3BjJ4AYIBFwoRU2hhZG93c29ja3PkuIvovb0SAkABggEPCglWcHMgdjJyYXkSAkACggETCg1SZWRpcyB3aW5kb3dzEgJAA4IBGQoTU2hhZG93c29ja3Mgd2luZG93cxICQASIAQA&ad_type=text
+
+https://www.baacloud89.com/modules/plan.php
+
+https://mosucloud.best/cart.php?a=view
+
+# CodeBlocks
+
+## 2019/1/30
+
+* 如何给CodeBlocks指定编译器。settings->compiler->Toolchain executables
+
+    https://blog.csdn.net/kangyucheng/article/details/77013428
+
+* 如何指定debugger
+
+![1580366664394](image/1580366664394.png)
+
+# VPN
+
+佛跳墙：https://www.kejibudayang.com/cn/?v=888#three
+
+极客云(Clash)：https://geekcloud1.ml/user/tutorial?os=windows&client=cfw
+https://mahongfei.com/1712.html
+https://gkercloud.com/user

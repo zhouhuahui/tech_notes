@@ -1,6 +1,6 @@
 # 字符串分割函数
 
-```
+```cpp
 /*
 算法功能：按一种字符，将一个字符串分割成多个字符串，放在vector中
 */
@@ -44,5 +44,36 @@ vector<string> splitStr(const string &s, const string &seperator)
 
 	return result;
 }
+```
+
+```cpp
+//根据字符串c模式，来分割字符串s，结果放在v中
+void SplitString(const string& s,const string& c,vector<string>& v){
+    string::size_type pos1,pos2;
+    pos1 = 0;
+    pos2 = s.find(c); //找到字符串c在s中的起始位置
+    while(string::npos != pos2){ //如果存在c子串
+        v.push_back(s.substr(pos1,pos2-pos1)); //分割
+        pos1 = pos2+c.size();
+        pos2 = s.find(c,pos1); //从pos1位置开始寻找c子串
+    }
+    if(pos1 != s.length()){ //pos1未到s的末尾(最后一个字符后面的位置)
+        v.push_back(s.substr(pos1)); //pos1处及以后形成的子串
+    }
+}
+
+```
+
+# string的比较
+
+慎用string.compare()函数
+
+```cpp
+string s1,s2;
+s1 = "1234";
+s2 = "124";
+if(s1 < s2)
+	printf("yes");
+//out:yes
 ```
 

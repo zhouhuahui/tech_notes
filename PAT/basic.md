@@ -404,7 +404,7 @@ int vis[MAXV] = {false};
 int G[MAXV][MAXV] = {INF};
 ```
 
-用pre数组保存路径，然后用DFS来遍历所有的路径，这种Dijkstra+DFS的做法可以编程复杂的情况。
+用pre数组保存路径，然后用DFS来遍历所有的路径，这种Dijkstra+DFS的做法可以适用于编程复杂的情况。
 
 ```cpp
 if(d[u]+G[u][v] < d[v]){
@@ -443,6 +443,81 @@ void DFS(int v){ //v为当前访问结点
     tempPath.pop_back(); //返回上一层时，将这一节点从pre中删除
 }
 ```
+
+**bellman-ford**
+
+dijkstra只适用于正权图的情况，而bellman-ford可以适用于负权图。
+
+```cpp
+//模板代码
+struct Node{
+    int v,dis; //v为邻接边的目标顶点，dis为邻接边的边权
+};
+
+vector<Node> Adj[MAXV]; //邻接表
+int n; //定点数
+int d[MAXV]; //起点到达各顶点的最短路径长度
+
+bool Bellman(int s){ //s为源点
+    //初始化
+    fill(d,d+MAXV,INF); //将整个数组赋值为INF
+    d[s] = 0;  //s到自身的距离为0
+    //求解数组d
+    for(int i=0;i<n-1;i++){ //n-1次迭代可求解d
+        for(int u=0;u<n;u++){
+            for(int j=0;j<Adj[u].size();j++){
+                int v = Adj[u][j].v; //邻接边的顶点
+                int dis = Adj[u][j].dis; //邻接边的边权
+                if(d[u]+dis < d[v]){ //以u为中介点可以使d[v]更小
+                    d[v] = d[u]+dis; //更新
+                }
+            }
+        }
+    }
+    //以下判断负环的代码
+    for(int u=0;u<n;u++){
+        for(int j=0;j<Adj[u].size();j++){
+            int v = Adj[u][j].v; //邻接边的顶点
+            int dis = Adj[u][j].dis; //邻接边的边权
+            if(d[u]+dis < d[v]){ //以u为中介点可以使d[v]更小
+                return false; //有从源点可达的负环
+            }
+        }
+    }
+    return true; //没有负环，数组d的所有值都已经最优
+}
+```
+
+**SPFA**
+
+改进的bellman-ford算法，时间复杂度仅为O(ke)(在无可达负环的情况下)
+
+```cpp
+//伪代码
+queue<int> Q;
+d[];
+源点s入队;
+while(队列非空){
+    取出队首元素u;
+    for(u的所有邻接边u->v){
+        if(d[u]+dis<d[v]){
+            d[v] = d[u]+dis;
+            if(v当前不在队列){
+                v入队;
+                if(v的入队次数大于n-1){
+                    说明有可达负环;return;
+                }
+            }
+        }
+    }
+}
+```
+
+
+
+
+
+
 
 
 
