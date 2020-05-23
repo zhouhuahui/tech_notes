@@ -1,3 +1,40 @@
+# A1001 A+B Format
+
+```cpp
+//freopen("D:\\input.txt","r",stdin);
+#include<bits/stdc++.h>
+using namespace std;
+
+int a,b;
+
+int main(){
+	//freopen("D:\\input.txt","r",stdin);
+	cin>>a>>b;
+	int c=a+b,i;
+	string s=to_string(c);
+	i=0;
+	if(s[i]=='-'){
+		cout<<s[i++];
+	}
+	int i2=i+(s.size()-i)%3;
+	while(i<i2){
+		cout<<s[i];
+		i++;
+		if(i==i2&&i2<s.size())cout<<",";
+	}
+	//if(i<s.size())cout<<",";
+	while(i<s.size()){
+		int i2=i+3;
+		for(;i<s.size()&&i<i2;i++){
+			cout<<s[i];
+		}
+		if(i<s.size())cout<<",";
+	}
+}
+//注意点：1. 对于-4999999 不要输出"-499,999,9"，而是，"-4,999,999"
+//        2. 对于-999999，因为没有不取整的部分，即上面的4，就不要忘了别输出"-,999,999" 
+```
+
 # A1002 A+B for Polynomials
 
 ```cpp
@@ -43,7 +80,7 @@ int main(){
 
 1. 24行的``count--`` 不要忘了
 
-# A1003 Emergency
+# A1003 Emergency(图论)
 
 **dijkstra解法**
 
@@ -345,9 +382,7 @@ int main(){
 }
 ```
 
-
-
-# **A1004** **Counting Leaves**
+# *A1004  Counting Leaves(DFS/BFS)
 
 题意：在一个树中，找出每一层的叶子结点数量
 
@@ -481,6 +516,8 @@ int main(){
 }
 ```
 
+**图+DFS**
+
 错误点：
 
 1. 根节点是1，而不是第一行的父亲。因为题目中说：``For the sake of simplicity, let us fix the root ID to be `01`.``
@@ -566,7 +603,7 @@ int main() {
 
 3. 36行。以前没有考虑一种情况：输入数据是0，然后如果不判断堆栈是否为空，直接出栈，则会造成**段错误**
 
-# A1006 Sign In and Sign Out
+# A1006 Sign In and Sign Out(排序)
 
 找最大值与最小值问题，采用迭代更新法，时间复杂度O(n)
 
@@ -678,7 +715,11 @@ int main(){
 
 1. 31行到36行的代码可能会有问题。
 
+本质问题就是找出序列中的最大值与最小值
+
 ```cpp
+/*这种思路应该是最好的。用scanf("%s %d:%d:%d %d:%d:%d" 的形式得到2进制的h,m,s，然后可以方便地比较
+*/
 #include<cstdio>
 #include<cstring>
 
@@ -710,13 +751,15 @@ int main(){
 }
 ```
 
-# A1007 MSS
+# A1007 MSS(DP)
 
 **动态规划**
 
 最大子序列大小
 
 Maximum Subsequence is the continuous subsequence.
+
+如果暴力求解，时间复杂度很可能达到O(n^4)，但是用DP法，就只有线性复杂度
 
 ```cpp
 /*
@@ -784,7 +827,288 @@ int main(){
 1. 17行的业务逻辑错了，验证一个数非负，应该用``if(seq[i]>=0)`` 
 2. 39行到44行的代码。实现38行的业务逻辑失败，只能找到使first的下标最大的那个最大子串。
 
-# A1013 Battle over Cities
+# A1008 Elevator
+
+```cpp
+//freopen("r","D:\\input.txt",stdin);
+#include<bits/stdc++.h>
+using namespace std;
+
+int n;
+ 
+int main(int argc, char** argv) {
+	//freopen("D:\\input.txt","r",stdin);
+	cin>>n;
+	int cur=0,next,ans=0;
+	for(int i=0;i<n;i++){
+		cin>>next;
+		if(next>cur){
+			ans+=(next-cur)*6+5;
+		}else{
+			ans+=(cur-next)*4+5;
+		}
+		cur=next;
+	}
+	cout<<ans;
+}
+```
+
+# A1009 product of polynomials
+
+```cpp
+/*直接设立两个大小为1001的数组，然后两个数组进行全连接相乘
+*/
+//freopen("D:\\input.txt","r",stdin);
+#include<bits/stdc++.h>
+using namespace std;
+#define MAXN 1000
+
+double poly1[MAXN+1],poly2[MAXN+1],ans[2*MAXN+1];
+
+void init(){
+	for(int i=0;i<=MAXN;i++){
+		poly1[i]=0.0;
+		poly2[i]=0.0;
+	}
+	for(int i=0;i<=2*MAXN;i++){
+		ans[i]=0.0;
+	}
+}
+int main(){
+	//freopen("D:\\input.txt","r",stdin);
+	init();
+	for(int i=0;i<2;i++){
+		int k,exp;
+		double coef;
+		cin>>k;
+		while(k--){
+			cin>>exp>>coef;
+			if(i==0)poly1[exp]=coef;
+			else poly2[exp]=coef;
+		}
+	}
+	//计算 
+	for(int i=0;i<=MAXN;i++){
+		for(int j=0;j<=MAXN;j++){
+			ans[i+j]+=poly1[i]*poly2[j];
+		}
+	}
+	//计算结果有多少项 
+	int num=0;
+	for(int i=0;i<=2*MAXN;i++){
+		if(ans[i]!=0.0)num++;
+	}
+	//输出 
+	cout<<num;
+	for(int i=2*MAXN;i>=0;i--){
+		if(ans[i]!=0.0){
+			printf(" %d %.1f",i,ans[i]);
+		}
+	}
+}
+```
+
+# *A1010 Radix
+
+```cpp
+/*吉本思想：用long long 存储计算的值，来进行比较
+*/
+//freopen("D:\\input.txt","r",stdin);
+#include<bits/stdc++.h>
+using namespace std;
+
+string num1,num2;
+int tag,radix;
+
+long long compute(string num,int rad){
+	long long res=0;
+	for(int i=0;i<num.size();i++){
+		int a=(num[i]<='9'?num[i]-'0':num[i]-'a'+10);
+		res=res*rad+a;
+	}
+	return res;
+}
+int main(){
+	//freopen("D:\\input.txt","r",stdin);
+	cin>>num1>>num2>>tag>>radix;
+	if(tag!=1){
+		swap(num1,num2);
+	}
+	long long value=compute(num1,radix);
+	//计算未知radix的数的最小radix
+	int radixMin=2;
+	for(int i=0;i<num2.size();i++){
+		int a=(num2[i]<='9'?num2[i]-'0':num2[i]-'a'+10);
+		if(a+1>radixMin){
+			radixMin=a+1;
+		}
+	}
+	//找到radix 
+	long long value2;
+	if(!(num2.size()==1 && num2[0]=='1')){
+		while((value2=compute(num2,radixMin))<value){ //error: 当num2=1时，value>=2时，不会结束循环的 
+			radixMin++;
+		}
+		if(value2==value){
+			cout<<radixMin;
+		}else{
+			cout<<"Impossible";
+		}
+	}else{
+		if(value==1){
+			cout<<"2";
+		}else{
+			cout<<"Impossible";
+		}
+	}
+} 
+```
+
+有一个case超时了，24分。
+
+# A1011 World Cup Betting
+
+```cpp
+//freopen("D:\\input.txt","r",stdin);
+#include<bits/stdc++.h>
+using namespace std;
+
+double odds[3][3];
+int bets[3];
+
+int main(){
+	//freopen("D:\\input.txt","r",stdin);
+	for(int i=0;i<3;i++){
+		int a;
+		for(int j=0;j<3;j++){
+			cin>>odds[i][j];
+			if(j==0)a=j;
+			else if(odds[i][j]>odds[i][a])a=j;
+		}
+		bets[i]=a;
+	}
+	for(int i=0;i<3;i++){
+		cout<<(bets[i]==0?"W":bets[i]==1?"T":"L")<<" ";
+	}
+	printf("%.2f",(odds[0][bets[0]]*odds[1][bets[1]]*odds[2][bets[2]]*0.65-1)*2);
+}
+```
+
+# A1012 The Best Rank(排序)
+
+```cpp
+//freopen("D:\\input.txt","r",stdin);
+#include<bits/stdc++.h>
+using namespace std;
+
+struct Stud{
+	string id;
+	vector<pair<int,int>> ranks; //pair<tag,rank>
+	vector<double> grades;//0:A 1:C 2:M 3:E
+	Stud(){
+		ranks.resize(4);
+		grades.resize(4);
+	}
+	Stud(string&_id,double _a,double _c,double _m,double _e){
+		ranks.resize(4); //error: 如果结构体中有vector，构造函数种一定要resize 
+		grades.resize(4);
+		id=_id;grades[0]=_a;grades[1]=_c;grades[2]=_m;grades[3]=_e;
+	}
+};
+vector<Stud> studs; //按照id从小到大排序
+vector<int> studs2; //studs[i]表示studs[i]号的学生的排名为i
+int n,m;
+
+void init(){
+	studs.resize(n);
+	studs2.resize(n);
+	for(int i=0;i<n;i++){
+		studs[i]=Stud();
+		studs2[i]=i;
+	}
+}
+bool cmpId(const Stud& s1,const Stud& s2){
+	return s1.id<s2.id;
+}
+bool cmpA(int s1,int s2){
+	return studs[s1].grades[0]>studs[s2].grades[0]; //error: <
+}
+bool cmpC(int s1,int s2){
+	return studs[s1].grades[1]>studs[s2].grades[1];
+}
+bool cmpM(int s1,int s2){
+	return studs[s1].grades[2]>studs[s2].grades[2];
+}
+bool cmpE(int s1,int s2){
+	return studs[s1].grades[3]>studs[s2].grades[3];
+}
+bool cmpRank(pair<int,int>p1, pair<int,int>p2){
+	return (p1.second!=p2.second)?p1.second<p2.second:p1.first<p2.first;
+}
+int Search(string id){
+	int low=0,high=n-1,mid;
+	while(high>=low){
+		mid=(low+high)/2;
+		if(studs[mid].id==id)return mid;
+		else if(studs[mid].id>id){
+			high=mid-1;
+		}else{
+			low=mid+1;
+		}
+	}
+	return -1;
+} 
+int main(){
+	//freopen("D:\\input.txt","r",stdin);
+	cin>>n>>m;
+	init();
+	string id;
+	double ag,cg,mg,eg;
+	for(int i=0;i<n;i++){
+		cin>>id>>cg>>mg>>eg;
+		ag=(cg+mg+eg)/3.0;
+		studs[i]=Stud(id,ag,cg,mg,eg);
+	}
+	//按照id排序
+	sort(studs.begin(),studs.end(),cmpId);
+	//按照成绩排序
+	for(int i=0;i<4;i++){
+		sort(studs2.begin(),studs2.end(),(i==0?cmpA:i==1?cmpC:i==2?cmpM:cmpE));
+		//将rank结果记录下来 
+		for(int j=0;j<n;j++){
+			int index=studs2[j];
+			if(j==0){
+				studs[index].ranks[i]={i,j+1};
+				//cout<<studs[index].id<<":ranks["<<i<<"]="<<j+1<<endl;///////
+			}else{
+				double lastGrade=studs[studs2[j-1]].grades[i];
+				double curGrade=studs[index].grades[i];
+				studs[studs2[j]].ranks[i]=(lastGrade==curGrade ? studs[studs2[j-1]].ranks[i] : pair<int,int>(i,j+1));
+				//cout<<studs[index].id<<":ranks["<<i<<"]="<<studs[studs2[j]].ranks[i].second<<endl;///////
+			}
+		}
+		//cout<<"----------"<<endl;//////
+	}
+	//查询
+	while(m--){
+		cin>>id;
+		int index;
+		if((index=Search(id)) != -1){
+			sort(studs[index].ranks.begin(),studs[index].ranks.end(),cmpRank);
+			int tag=studs[index].ranks[0].first;
+			cout<<studs[index].ranks[0].second<<" "<<(tag==0?"A":tag==1?"C":tag==2?"M":"E")<<endl;
+		}else{
+			cout<<"N/A"<<endl;
+		}
+	} 
+} 
+```
+
+错误分析：
+
+1. 只有14行和35行两个错误，且都是细节错误，但是花了20分钟调试出来
+
+# A1013 Battle over Cities(并查集+连通分量)
 
 ```cpp
 /*
@@ -863,9 +1187,8 @@ int main(){
     f.insert(father[j]); //错误的写法
     ```
 
-    
 
-# A1014 Waiting in Line
+# A1014 Waiting in Line（难）
 
 ```cpp
 /*
@@ -988,11 +1311,22 @@ int main(){
 3. 81行。对``Line[i][1]``进行操作时，要判断``Line[i][1] > 0``是否成立，也就是，第i个window是否有人
 4. 75行；业务逻辑搞错了，是每个顾客的开始服务时间在17:00之前都可以在当天完成业务，而不是服务完成时间
 
-
+```
+基本思路：
+当前时间:time
+1) if(time<17:00)进入窗口等待队列知道窗口队列满和人已经入完
+2) 找到所有窗口中最早有人办完交易的，time更新到那个时候，并把该窗口的客户pop出来，更新该顾客的finishTime;
+   如果没有人办完交易（所有窗口没有人），则goto 4)
+3) 回到1)
+4) 输出
+优化的基本思路：
+若所有窗口有200人的空间，总共有1000人，则可以把前面200人直接填满窗口队列。
+每个顾客在入队列的时候就已经确定了finishTime,所以在1)步没有人入队时即可退出循环。
+```
 
 ```cpp
 /*
-基本思想：计算每个客户的结束时间，与17:00比较
+基本思想：
 */
 #include<cstdio>
 #include<queue>
@@ -1190,6 +1524,55 @@ int main(){
 ```
 
 我发现若是思路和设计正确，则肯定可以做对，除非有一些细节错误。
+
+# A1015 Reversible Primes(质数)
+
+```cpp
+//freopen("D:\\input.txt","r",stdin);
+#include<bits/stdc++.h>
+using namespace std;
+
+bool isPrime(int x){
+	int sqrtx=sqrt(x);
+	if(x==1)return false;
+	for(int i=2;i<=sqrtx;i++){
+		if(x%i==0)return false;
+	}
+	return true;
+}
+//如果是可以处理的数据，则返回true 
+bool dealLine(){
+	int num,radix;
+	cin>>num;
+	if(num<0)return false;
+	cin>>radix;
+	if(!isPrime(num)){
+		cout<<"No"<<endl;
+		return true;
+	}
+	vector<int> num2; //保存num转换为radix进制后的反转的数 
+	while(num!=0){
+		num2.push_back(num%radix);
+		num=num/radix;
+	}
+	//计算num2的值
+	int value=0;
+	for(int i=0;i<num2.size();i++){
+		value=value*radix+num2[i];
+	} 
+	if(isPrime(value)){
+		cout<<"Yes"<<endl;
+		return true;
+	}else{
+		cout<<"No"<<endl;
+		return true;
+	}
+}
+int main(){
+	//freopen("D:\\input.txt","r",stdin);
+	while(dealLine());
+}
+```
 
 # A1016 Phone Bills
 
@@ -1425,6 +1808,17 @@ int main(){
 7. 77行。忘了更新循环计数
 
 # A1017 Queueing at Bank
+
+```
+基本思路：
+数据结构：custs(保存顾客信息); wins(保存窗口信息); time(当前时间)
+1)对custs按照到达时间排序
+2)1.考虑custs[0],找当前最小空闲时刻的窗口win,更新time为最小空闲时刻与custs[0]到达时间的最大值,更新
+    custs[0]的等待时间为time-到达时间,更新win的空闲时刻为time+custs[0]办理手续的时间
+  2.custs[1]同理.
+  3. ...... 考虑最后一个cust
+3).考虑所有更新了等待时间的顾客，计算平均等待时间
+```
 
 ```cpp
 /*
@@ -1687,6 +2081,19 @@ int main(){
 1. 逻辑复杂：59行到156行。退出循环的逻辑很复杂。84到105的代码可以被106到137的代码替换，因为后者更简洁明了。
 2. 运行超时（逻辑错误）：66行，在寻找最早pop的窗口时，要注意要考虑的窗口必须是inq=false的，加入忘了加这个条件：有一个window的poptime比minarrive小，然后它加入winWaitQue，然后此时custQue非空，custWaitQue为空，则进入下个循环，又把考虑刚才的那个window，它的poptime依然最小，但是它的inq=false，所以未加入winWaitQue，然后又循环，又考虑那个window。。。死循环，导致超时。这是非常严重的逻辑错误。
 
+```
+基本思路：
+数据：custs; wins; winWaitQue(空闲的窗口的队列); custWaitQue(还没有玩游戏的顾客的队列); time(当前时间)
+1).对custs按照到达时间排序
+2).1.从时间线上找超过time的最近一个时间点（客户到来或者窗口空闲）（不考虑到达时间超过17:00:00的顾客），把顾客或窗口压入
+	 对应的队列，若cust进入顾客等待队列或超过17:00:00则从custs中删除，更新time为最近的时间点
+   2.若所有custs为空且顾客等待队列为空，则说明结束了，回到3)
+   3.若顾客等待队列和窗口等待队列不是全为空，则考虑队首的顾客和编号最小的窗口，更新顾客等待时间为time-到达时间,
+     窗口空闲时刻为time+顾客业务处理时间，一直处理直到有一个队列为空
+   4.回到2)
+3).考虑所有计算了等待时间的顾客，计算结果。
+```
+
 ```cpp
 /* v2.2
 既然用基于时间节点的方式来编程，而不是v1的基于顾客顺序的编程，以下的代码更好。
@@ -1850,9 +2257,12 @@ int main(){
 }
 ```
 
+# A1018 Public Bike Management(图论)
 
-
-# A1018 Public Bike Management
+```
+1).用Dijkstra算法算set<int> Pre[n]的值
+2).DFS Pre，找到叶子节点，计算send值和bring值，并和minSend和minBring比较来更新optPath.
+```
 
 ```cpp
 /*
@@ -1921,7 +2331,7 @@ void Dijkstra(){ //默认从0出发
         }
     }
 }
-void SPFA(){
+void SPFA3(){
     //初始化
     fill(dist,dist+n+1,INF);
     dist[0] = 0;
@@ -2027,4876 +2437,36 @@ int main(){
 4. 114行。数据更新顺序错了
 5. 120行到125行。对两种情况的分别对minSend和minBring单个处理了，其实，不管哪种情况，都应该更新minSend和minBring两个。
 
-# A1020 Tree Traversals
-
-```cpp
-#include<cstdio>
-#include<queue>
-using namespace std;
-
-struct Node{
-    int data;
-    Node* lchild;
-    Node* rchild;
-    Node(int d){data = d;lchild = rchild = nullptr;}
-};
-
-const int MAXN = 50;
-int n; //结点个数
-int Post[MAXN],In[MAXN]; //后序遍历，先序遍历
-
-Node* Create(int postL,int postR,int inL,int inR){ //当前二叉树的后序序列区间为[postL,postR]，先序序列区间为[inL,inR]
-    //递归出口
-    if(postL > postR){
-        return nullptr;
-    }
-    
-    int k; //中序遍历序列中根节点的位置
-    for(k=inL;k<=inR;k++){
-        if(In[k] == Post[postR])
-            break;
-    }
-    Node* root = new Node(In[k]); //根节点
-    int numLeft = k-inL;
-    root->lchild = Create(postL,postL+numLeft-1,inL,k-1);
-    root->rchild = Create(postL+numLeft,postR-1,k+1,inR);
-    return root;
-}
-
-void BFS(Node* root){
-    queue<Node*> q;
-    q.push(root);
-    int num = 0; //表示正在访问第num个结点
-    while(!q.empty()){
-        Node* now = q.front();
-        q.pop();
-        num++;
-        printf("%d",now->data); //输出结点
-        if(num < n){
-            printf(" ");
-        }
-        if(now->lchild)
-            q.push(now->lchild);
-        if(now->rchild)
-            q.push(now->rchild);
-    }
-}
-
-int main(){
-    scanf("%d",&n);
-    for(int i=0;i<n;i++){
-        scanf("%d",&Post[i]);
-    }
-    for(int i=0;i<n;i++){
-        scanf("%d",&In[i]);
-    }
-    Node* root = Create(0,n-1,0,n-1);
-    BFS(root);
-}
-```
-
-# A1021 Deepest Root
-
-```cpp
-/*
-思路：
-1 由于连通、边数为n-1的图一定是一棵树，因此需要判断给定数据是否能使图连通。使用并查集判断方法：
-每读入一条边的两个端点，判断这两个端点是否属于相同的集合，如果不同，则将它们合并到一个集合中，当处理完所有边后根据最终产生的集合个数是否为1来判断给定的图是否连通。
-2 确定图连通后，则确定了树，选择合适根结点使树高最大的做法为：
-先任意选择一个结点，从该节点开始遍历整棵树，获取能达到的最深的结点，记为集合A；然后从集合A中任意一个结点出发遍历整棵树，获取能达到的最深顶点，记为结点集合B。集合A与B的并集就是所求结果。
-*/
-#include<cstdio>
-#include<vector>
-#include<set>
-#include<cstring>
-using namespace std;
-
-struct Edge{
-    int v1,v2;
-    Edge(int _v1, int _v2){v1=_v1;v2=_v2;}
-};
-const int MAXN = 10005;
-int n;
-vector<int> Adj[MAXN];
-int father[MAXN];
-bool vis[MAXN] = {false};
-
-int findFather(int x){
-    if(x == father[x])
-        return x;
-    int f = findFather(father[x]);
-    father[x] = f;
-    return f;
-}
-void unionTwo(int a,int b){
-    int af = findFather(a);
-    int bf = findFather(b);
-    if(af != bf)
-        father[bf] = af;
-}
-void DFS(int s,int layer,int& maxL,set<int>& se){ //从s遍历，找到最深的结点，放到se中
-    if(layer > maxL){
-        maxL = layer;
-        se.clear();
-        se.insert(s);
-    }else if(layer == maxL){
-        se.insert(s);
-    }
-    for(int i=0;i<Adj[s].size();i++){
-        int v = Adj[s][i]; //邻接点
-        if(vis[v] == false){
-            vis[v] = true;
-        	DFS(v,layer+1,maxL,se);
-        }
-    }
-}
-int main(){
-    scanf("%d",&n);
-    //初始化
-    for(int i=0;i<=n;i++)
-        father[i] = i;
-    
-    //输入及并查集操作
-    int u = 1; //第一个输入的结点号
-    for(int i=1;i<=n-1;i++){
-        int v1,v2;
-        scanf("%d%d",&v1,&v2);
-        if(i==1)
-            u = v1;
-        Adj[v1].push_back(v2);
-        Adj[v2].push_back(v1);
-        unionTwo(v1,v2);
-    }
-    set<int> roots; //存储并查集树的根节点
-    for(int i=1;i<=n;i++){
-        roots.insert(findFather(i));
-    }
-    
-    if(roots.size() != 1){ //说明有环路，联通块数大于1
-        printf("Error: %d components\n",roots.size());
-    }else{ //Adj是个树
-        set<int> A,B;
-        
-        int maxL = 0;
-        fill(vis,vis+n+1,false);
-        vis[u] = true;
-        DFS(u,0,maxL,A); //从u出发所能到达的最深的结点
-        
-        set<int>::iterator it;
-        for(it = A.begin(); it != A.end(); it++){
-            maxL = 0;
-            fill(vis,vis+n+1,false);
-            vis[(*it)] = true;
-            DFS((*it),0,maxL,B);
-            break; //只运行一次
-        }
-        
-        A.insert(B.begin(),B.end());
-        for(it = A.begin(); it != A.end(); it++){
-            printf("%d\n",(*it));
-        }
-    }
-}
-```
-
-错误分析：
-
-1. 函数运行前初始化
-2. 56行。使用未输入值的n
-3. 60行。一开始为``int u=0`` 当输入的n只有1时，u作为第一个结点，是不合法的（因为结点从1开始编号）
-4. 算法逻辑错误。91行，先从一个点找最深节点，结果在A中，再从A中任意一个结点出发找最深结点，结果啊在B中，而无需对A中所有结点进行DFS，否则会超时。
-
-# A1022 Digital Library
-
-```cpp
-/*
-基本思路：用map保存string到int的映射关系，这样，每次查询时只用比较int，不用重复比较string，节省时间，
-信息块中存储的信息段也都用int表示，节省空间
-*/
-#include<cstdio>
-#include<map>
-#include<string>
-#include<vector>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 10005;
-int n,m;
-int cntTit = 0,cntAut = 0,cntKey = 0,cntPub=0;
-map<string,int> mapTit,mapAut,mapKey,mapPub; //title-int, author-int, keywords-int, publisher-int
-
-struct Node{
-    int id;
-    int title;
-    int author;
-    vector<int> keywords;
-    int publisher;
-    int year;
-};
-
-Node lib[MAXN];
-
-void erase_n(char* s){ //去掉换行符
-    int i=0;
-    while(s[i] != '\n' && s[i] != '\0')
-        i++;
-    s[i] = '\0';
-}
-//根据字符串c模式，来分割字符串s，结果放在v中
-void SplitString(const string s,const string c,vector<string>& v){
-    string::size_type pos1,pos2;
-    pos1 = 0;
-    pos2 = s.find(c); //找到字符串c在s中的起始位置
-    while(string::npos != pos2){ //如果存在c子串
-        v.push_back(s.substr(pos1,pos2-pos1)); //分割
-        pos1 = pos2+c.size();
-        pos2 = s.find(c,pos1); //从pos1位置开始寻找c子串
-    }
-    if(pos1 != s.length()){ //pos1未到s的末尾(最后一个字符后面的位置)
-        v.push_back(s.substr(pos1)); //pos1处及以后形成的子串
-    }
-}
-void input(int i){ //输入一个信息块：id,title,author......
-    char tit[85],aut[85],key[10005],pub[85];
-
-    scanf("%d\n",&lib[i].id); //输入id
-    fgets(tit,85,stdin); //输入title
-    erase_n(tit);
-    if(mapTit.find(string(tit)) == mapTit.end()){
-        mapTit[string(tit)] = cntTit++;
-        lib[i].title = cntTit - 1;
-    }else{
-        lib[i].title = mapTit[string(tit)];
-    }
-    fgets(aut,85,stdin); //输入author
-    erase_n(aut);
-    if(mapAut.find(string(aut)) == mapAut.end()){
-        mapAut[string(aut)] = cntAut++;
-        lib[i].author = cntAut - 1;
-    }else{
-        lib[i].author = mapAut[string(aut)];
-    }
-    //输入keywords
-    /*while(scanf("%s",&key) != EOF){
-        if(mapKey.find(string(key)) == mapKey.end()){
-            mapKey[string(key)] = cntKey++;
-            lib[i].keywords.push_back(cntKey-1);
-        }else{
-            lib[i].keywords.push_back(mapKey[string(key)]);
-        }
-    }*/
-    fgets(key,11005,stdin); 
-    erase_n(key);
-    vector<string> vec_res;
-    SplitString(key," ",vec_res);
-    for(int j=0;j<vec_res.size();j++){
-        if(mapKey.find(vec_res[j]) == mapKey.end()){
-            mapKey[vec_res[j]] = cntKey++;
-            lib[i].keywords.push_back(cntKey-1);
-        }else{
-            lib[i].keywords.push_back(mapKey[vec_res[j]]);
-        }
-    }
-    fgets(pub,85,stdin); //输入publisher
-    erase_n(pub);
-    if(mapPub.find(string(pub)) == mapPub.end()){
-        mapPub[string(pub)] = cntPub++;
-        lib[i].publisher = cntPub - 1;
-    }else{
-        lib[i].publisher = mapPub[string(pub)];
-    }
-    scanf("%d\n",&lib[i].year); //输入年份
-}
-
-vector<int> res; //查询结果的集合，并排序
-void query(int info){ //根据年份查找
-    //清空res
-    res.clear();
-
-    for(int i=0;i<n;i++){
-        if(lib[i].year == info){
-            res.push_back(lib[i].id);
-        }
-    }
-    sort(res.begin(),res.end());
-}
-void query2(int num, string str){ //num表示输入的数据类型：title,pub...
-    //清空res
-    res.clear();
-
-    int info;
-
-    if(num == 1){ //根据title查询
-        if(mapTit.find(str) == mapTit.end())
-            return;
-        info = mapTit[str];
-        for(int i=0;i<n;i++){
-            if(lib[i].title == info){
-                res.push_back(lib[i].id);
-            }
-        }
-    }else if(num == 2){ //根据author查询
-        if(mapAut.find(str) == mapAut.end())
-            return;
-        info = mapAut[str];
-        for(int i=0;i<n;i++){
-            if(lib[i].author == info){
-                res.push_back(lib[i].id);
-            }
-        }
-    }else if(num == 3){ //根据关键词查询
-        if(mapKey.find(str) == mapKey.end())
-            return;
-        info = mapKey[str];
-        for(int i=0;i<n;i++){
-            if(std::count(lib[i].keywords.begin(),lib[i].keywords.end(),info) > 0){
-                res.push_back(lib[i].id);
-            }
-        }
-    }else{ //根据出版商查询
-        if(mapPub.find(str) == mapPub.end()) 
-            return;
-        info = mapPub[str];
-        for(int i=0;i<n;i++){
-            if(lib[i].publisher == info){
-                res.push_back(lib[i].id);
-            }
-        }
-    }
-    sort(res.begin(),res.end());
-}
-
-int main(){
-    scanf("%d",&n);
-    for(int i=0;i<n;i++){
-        input(i); //out:lib
-    }
-
-    scanf("%d",&m); //输入query的个数
-    for(int i=0;i<m;i++){
-        int num;
-        int info;
-        char info2[85];
-        scanf("%d: ",&num);
-        if(num == 5){ //后面是年份
-            scanf("%d\n",&info);
-            query(info); //查询
-        }else{
-            //scanf("%s",&info2);
-            fgets(info2,85,stdin);
-            erase_n(info2);
-            query2(num, string(info2)); //查询
-        }
-        //输出
-        if(num == 5)
-        	printf("%d: %d\n",num,info);
-        else
-            printf("%d: %s\n",num,info2);
-        if(res.size() != 0){
-            for(int j=0;j<res.size();j++){
-                printf("%07d\n",res[j]);
-            }
-        }else{
-            printf("Not Found\n");
-        }
-    }
-
-}
-
-```
-
-错误分析：
-
-1. 27行。scanf的用法错误
-2. 42行到50行。读取一行中的所有单词，不能用scanf，具体见我记的c++笔记，只能用gets，然后分割字符串
-3. 输出格式错误。若输入为0000111，输出不应为111，因此用``printf("%07d")`` 的形式
-4. 输入错误。由于关键词不多于10个字符，共有1000个不同的字符，所以一行所有关键词的最大大小为11000+5
-5. stl使用错误。用map进行映射时，要先用map.find()函数判断map中是否有对应的键，然后再查询，否则，直接进行映射，即使map中没有对应的键，也会返回一个默认值，比如0，但是有些键的值也是0，产生错误
-
-**别人的思路**
-
-https://blog.csdn.net/A_Aria/article/details/86558688
-
-这里有个思路比较好。由于题目只要关键词对应的所有书本ID，因此在数据输入时就建立，关键词-书本ID集的对应关系，如``悲惨世界-{0000001, 0000002, 0000003}`` 。这样既简单，又高效
-
-# A1025 PAT Ranking
-
-```CPP
-/*
-基本思路1：有n个vector，每个存储各个赛区的选手信息。对每个vector进行排序，完成后遍历，算local rank。
-把所有vector进行merge，完成后遍历，算final rank
-*/
-/*
-基本思路2：用一个数组存储所有选手信息，并按照（赛区号，成绩，id）排序，之后算local rank。
-第1个和第2个合并，第3个和第4个合并，....，第1，2个的结果和3，4的结果合并
-*/
-#include<cstdio>
-#include<iostream>
-#include<string>
-#include<algorithm>
-#include<vector>
-using namespace std;
-
-const int MAXN = 105;
-const int MAXK = 305;
-
-struct Node{
-    string id;
-    int score;
-    int area;
-    int localRank;
-    int finalRank;
-};
-int n;
-Node testees[MAXN*MAXK];
-vector<int> Size; //记录要合并的块的大小，Size的大小表示要合并的块的个数
-int totalNum = 0;
-
-bool Comp(Node a, Node b){
-    if(a.score != b.score){
-        return a.score > b.score;
-    }else{
-        return a.id < b.id;
-    }
-}
-void Sort(){ //赛区内排序
-    int a=0,b;
-    for(int i=0;i<Size.size();i++){
-        b = a + Size[i] - 1;
-        sort(testees+a, testees+b+1, Comp);
-        a = b + 1;
-    }
-}
-void LocalRank(){ //testees中至少有一个人,且排序好
-    int rank = 1; //人数计数
-    int area = 1;
-    int score = testees[0].score;
-    testees[0].localRank = 1;
-    for(int i=1;i<totalNum;i++){
-        if(testees[i].area != area){ //赛区变化
-            area = testees[i].area;
-            rank = 1;
-            score = testees[i].score;
-            testees[i].localRank = 1;
-        }else{
-        	if(testees[i].score == score){
-        	    testees[i].localRank = testees[i-1].localRank;
-        	    ++rank;
-        	}else{
-        	    testees[i].localRank = ++rank;
-        	    score = testees[i].score;
-        	}
-        }
-    }
-}
-void Merge(int a, int b, int c){ //合并[a,b]与[b+1,c]
-    Node* temp = new Node[c-a+1];
-    int i=a,j=b+1,k=0;
-    while(i<=b && j<=c){
-        if(Comp(testees[i],testees[j]) == true){
-            temp[k] = testees[i];
-            i++;
-        }else{
-            temp[k] = testees[j];
-            j++;
-        }
-        k++;
-    }
-    if(i <= b){
-        while(i <= b){
-            temp[k] = testees[i];
-            k++;
-            i++;
-        }
-    }else if(j <= c){
-        while(j <= c){
-            temp[k] = testees[j];
-            k++;
-            j++;
-        }
-    }
-    k = 0;
-    for(i=a;i<=c;i++){
-        testees[i] = temp[k];
-        k++;
-    }
-}
-void FinalRank(){
-    int rank = 1;
-    int score = testees[0].score;
-    testees[0].finalRank = 1;
-    for(int i=1;i<totalNum;i++){
-        if(testees[i].score == score){
-            testees[i].finalRank = testees[i-1].finalRank;
-            ++rank;
-        }else{
-            testees[i].finalRank = ++rank;
-            score = testees[i].score;
-        }
-    }
-}
-int main(){
-    scanf("%d",&n);
-    for(int i=0;i<n;i++){
-        int k;
-        scanf("%d",&k);
-        Size.push_back(k); //记录人数
-        for(int j=0;j<k;j++){
-            //int num = i*n + j;
-            int num = totalNum + j;
-            cin>>testees[num].id;
-            cin>>testees[num].score;
-            testees[num].area = i + 1;
-        }
-        totalNum += k;
-    }
-    //赛区内的排序
-    Sort();
-
-    //计算每个赛区的localRank
-    LocalRank();
-
-    //合并
-    while(Size.size() != 1){ //未合并完
-        int a=0,b,c;
-        int i;
-        vector<int> temp;
-        for(i=0;i<=Size.size()-2;i=i+2){
-            b = a + Size[i] - 1;
-            c = b + Size[i+1];
-            Merge(a,b,c);
-            temp.push_back(c-a+1);
-
-            a = c + 1;
-        }
-        if(i == Size.size()-1){
-            temp.push_back(Size[i]);
-        }
-
-        Size = temp;
-    }
-    //sort(testees,testees+totalNum,Comp);
-
-    //计算finalRank
-    FinalRank();
-	
-    printf("%d\n",totalNum);
-    for(int i=0;i<totalNum;i++){
-        printf("%s %d %d %d\n",testees[i].id.c_str(),testees[i].finalRank,testees[i].area,testees[i].localRank);
-    }
-}
-
-```
-
-错误分析：
-
-1. Comp函数写错了，若按照成绩由大到小排序，则应该写``return a.score > b.score`` 
-2. 归并排序的Merge函数写的有问题。判断一个数组没有merge完的标准是``if(i <= b)`` 而不是 ``if(i != b)`` 
-3. 121行。我想记录是第几个人，但是121行写的是什么鬼。
-
-# A1026 Table Tennis
-
-```cpp
-//v1.1
-/*
-基本思路1：一个桌子结构体有：是否VIP，poptime。一个vector1保存排队队列，一个vipNum保存队列中VIP的数量。
-先找最先pop的桌子，若是VIP桌子，则优先让VIP进来，若不是，则让队列中最前面的进来
-每个玩家最多玩2h
-
-基本思路2：维护两个队列：桌子队列和玩家队列（vector表示），桌子队列表示已经空闲但是暂时没有人来玩的桌子，
-玩家队列表示已经到来但是没有桌子可以用。通过移动时间的方式更新两个队列。
-1. 移动到一个时间点（玩家到来或桌子空闲），若时间点过了21:00:00则推出循环
-2. 若玩家到来，则玩家进入玩家队列，若桌子空闲，则桌子进入桌子队列，处理两个队列（出队），直到有至少一个队列为空，
-    回到1
-*/
-#include<cmath>
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-#include<queue>
-using namespace std;
-
-const int MAXN = 10005; //最大的玩家对的个数
-const int MAXK = 105; //最大的桌子个数
-const int INF = 1e8;
-
-int n,k,m; //m是VIP桌子个数
-
-struct Table{
-    bool isVIP;
-    int popTime; //second
-    int servePairNum;
-};
-struct Pair{
-    int arriveTime;
-    int serveTime; //默认为0，表示未接受服务
-    int playTime; //in second
-    bool isVIP;
-};
-Table tables[MAXK];
-Pair pairs[MAXN];
-vector<int> pairs2; //保存排序好的pairs副本, 静态指针数组
-
-vector<int> tablesQue;
-vector<int> pairsQue;
-bool inq[MAXK] = {false};
-
-bool Comp(int a, int b){
-    return pairs[a].arriveTime < pairs[b].arriveTime;
-}
-bool Comp2(int a, int b){
-    return pairs[a].serveTime < pairs[b].serveTime;
-}
-/*
-in: pairs2, a, tables
-out: tablesQue, pairsQue, a
-return: false表示不会再有入队的元素了
-*/
-/*bool Inque(int& a){ //pairs2[a]开始选择
-    //选择桌子中最早pop的
-    int minpop = INF;
-    vector<int> mintables;
-    for(int i=1; i<=k; i++){
-        if(inq[i] == false && tables[i].popTime < minpop){
-            minpop = tables[i].popTime;
-            mintables.clear();
-            mintables.push_back(i);
-        }else if(inq[i] == false && tables[i].popTime == minpop){
-            mintables.push_back(i);
-        }
-    }
-    //if(minpop > 21*3600)
-    //    return false;
-
-    //选择玩家
-    int player = pairs2[a];
-    if(pairs[player].arriveTime < minpop){
-        pairsQue.push_back(player);
-        a++;
-    }else if(pairs[player].arriveTime == minpop){
-        pairsQue.push_back(player);
-        a++;
-        for(int j=0; j<mintables.size(); j++){
-            tablesQue.push_back(mintables[j]);
-            inq[mintables[j]] = true;
-        }
-        sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    }else{
-        for(int j=0; j<mintables.size(); j++){
-            tablesQue.push_back(mintables[j]);
-            inq[mintables[j]] = true;
-        }
-        sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    }
-    return true;
-}*/
-
-/*
-in: pairs2, a, tables
-out: tablesQue, pairsQue, a
-return: false表示不会再有入队的元素了
-*/
-bool Inque(int& a){
-    int minpop = INF;
-    vector<int> mintables;
-    for(int i=1; i<=k; i++){
-        if(inq[i] == false && tables[i].popTime < minpop){
-            minpop = tables[i].popTime;
-            mintables.clear();
-            mintables.push_back(i);
-        }else if(inq[i] == false && tables[i].popTime == minpop){
-            mintables.push_back(i);
-        }
-    }
-    
-    if(minpop >= 17*3600 && a == n){
-        return false;
-    }else if(a < n){
-    	int player = pairs2[a];
-    	if(pairs[player].arriveTime < minpop){
-    	    pairsQue.push_back(player);
-    	    a++;
-    	}else if(pairs[player].arriveTime == minpop){
-    	    pairsQue.push_back(player);
-    	    a++;
-    	    for(int j=0; j<mintables.size(); j++){
-    	        tablesQue.push_back(mintables[j]);
-    	        inq[mintables[j]] = true;
-    	    }
-    	    sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    	}else{
-    	    for(int j=0; j<mintables.size(); j++){
-    	        tablesQue.push_back(mintables[j]);
-    	        inq[mintables[j]] = true;
-    	    }
-    	    sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    	}
-    }else if(minpop < 17*3600){
-        for(int j=0; j<mintables.size(); j++){
-    	    tablesQue.push_back(mintables[j]);
-    	    inq[mintables[j]] = true;
-    	}
-    	sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    }
-    return true;
-}
-
-/*
-in: tablesQue
-return: -1:没有, 否则，是vip的下标
-*/
-int VipInTablesQue(){
-    int i ;
-    for(i = 0; i < tablesQue.size(); i++){
-        if(tables[tablesQue[i]].isVIP == true)
-            return i;
-    }
-    return -1;
-}
-int VipInPairsQue(){
-    int i;
-    for(i = 0; i < pairsQue.size(); i++){
-        if(pairs[pairsQue[i]].isVIP == true)
-            return i;
-    }
-    return -1;
-}
-/*
-tables[tablesQue[c]]和pairs[pairsQue[d]]配对了，更新操作,pairs,tables,pairsQue,tablesQue
-*/
-void Update(int c, int d){
-    int a = tablesQue[c];
-    int b = pairsQue[d];
-    pairs[b].serveTime = max(pairs[b].arriveTime, tables[a].popTime);
-    tables[a].popTime = pairs[b].serveTime + min(pairs[b].playTime,7200); //最多玩2h
-    tables[a].servePairNum++;
-    tablesQue.erase(tablesQue.begin()+c);
-    inq[a] = false;
-    pairsQue.erase(pairsQue.begin()+d);
-}
-
-int main(){
-    //freopen("D:\\input.txt", "r", stdin);
-
-    scanf("%d",&n);
-    for(int i=1;i<=n;i++){
-        int hh,mm,ss,time,flag;
-        //scanf("%d:%d:%d %d:%d:%d %d %d\n",&hh,&mm,&ss,&time,&flag);
-        scanf("%d:%d:%d %d %d\n",&hh,&mm,&ss,&time,&flag);
-        pairs[i].arriveTime = hh*3600 + mm*60 + ss;
-        pairs[i].playTime = time*60;
-        pairs[i].isVIP = (flag == 1) ? true : false;
-        pairs[i].serveTime = 0;
-        pairs2.push_back(i);
-    }
-    scanf("%d %d\n",&k,&m);
-    for(int i=1; i<=k; i++){
-        tables[i].isVIP = false;
-        tables[i].popTime = 8*3600;
-        tables[i].servePairNum = 0;
-    }
-    for(int i=0;i<m;i++){
-        int a;
-        scanf("%d",&a);
-        //tables[i].isVIP = true;
-        tables[a].isVIP = true;
-    }
-
-    sort(pairs2.begin(),pairs2.end(),Comp); //pairs副本按照到达时间由小到大排序
-
-    /*int i = 0;
-    while(i <= n){ //pairs2中的玩家没有遍历完
-        Inque(i);
-        while(!tablesQue.empty() && !pairsQue.empty()){
-            int a = VipInTablesQue();
-            if(a != -1){ //队列中有VIP桌子
-                int b = VipInPairsQue();
-                if(b != -1){ //队列中有VIP
-                    Update(a,b);
-                }else{
-                    //Update(a,0)
-                    Update(0,0);
-                }
-            }else{
-                Update(0,0);
-            }
-        }
-    }*/
-    int i = 0;
-    while(Inque(i)){
-        while(!tablesQue.empty() && !pairsQue.empty()){
-            int a = VipInTablesQue();
-            if(a != -1){ //队列中有VIP桌子
-                int b = VipInPairsQue();
-                if(b != -1){ //队列中有VIP
-                    Update(a,b);
-                }else{
-                    //Update(a,0);
-                    Update(0,0);
-                }
-            }else{
-                Update(0,0);
-            }
-        }
-    }
-
-    sort(pairs2.begin(),pairs2.end(),Comp2); //按照serveTime排序
-    for(i=0; i<pairs2.size();i++){
-        int a = pairs2[i];
-        if(pairs[a].serveTime != 0){
-            int time1 = pairs[a].arriveTime;
-            int time2 = pairs[a].serveTime;
-            //int h1 = time1/3600, m1 = (time1-time1/3600)/60, s1 = (time1-time1/3600)%60;
-            //int h2 = time2/3600, m2 = (time2-time2/3600)/60, s2 = (time2-time2/3600)%60;
-            int h1 = time1/3600, m1 = (time1%3600)/60, s1 = (time1%3600)%60;
-            int h2 = time2/3600, m2 = (time2%3600)/60, s2 = (time2%3600)%60;
-            printf("%02d:%02d:%02d %02d:%02d:%02d %.0f\n",h1,m1,s1,h2,m2,s2,round((time2-time1)/60.0));
-        }
-    }
-    for(i=1; i<=k; i++){
-        if(i == 1){
-            printf("%d",tables[i].servePairNum);
-        }else{
-            printf(" %d",tables[i].servePairNum);
-        }
-    }
-}
-
-```
-
-有两个case没过
-
-错误分析：
-
-1. 细节错误：187, 184，201
-2. 业务逻辑错误：120，题目中要求最多玩2h；166，在有VIP桌子空闲时且没有VIP时，第一个玩家不能选择VIP桌子，除非VIP桌子是在编号最小的那个。
-3. 数据更新错误：174，在该更新inq数组的时候没有更新，桌子从等待队列出去后，置inq值为false；
-4. 逻辑错误：68---69；我对于循环（两个队列的入队操作，pairs tables的更新以及两个队列的出队操作）的循环逻辑搞错了。以前，我是这样想的，当没有玩家可以入队时退出循环，推出循环后也不更新pairs tables了，但实际上，这个时候退出循环，仍然可能有在21:00前pop的桌子入队，所以推出循环的逻辑错了。正确的做法是，当最早pop的桌子是在21:00之后且没有玩家可以入队时推出循环，因为这个时候，才真正不可能有入队的操作。
-5. 逻辑错误：112行退出循环的逻辑还是错了。虽然``minpop >= 17*3600 && a == n`` 时肯定要退出大循环，但是万一所有玩家都在21:00:00之前进来和玩完，这就意味着minpop<17*3600时也会有退出循环的情况。
-
-```cpp
-//v1.2
-#include<cmath>
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-#include<queue>
-using namespace std;
-
-const int MAXN = 10005; //最大的玩家对的个数
-const int MAXK = 105; //最大的桌子个数
-const int INF = 1e8;
-
-int n,k,m; //m是VIP桌子个数
-
-struct Table{
-    bool isVIP;
-    int popTime; //second
-    int servePairNum;
-};
-struct Pair{
-    int arriveTime;
-    int serveTime; //默认为0，表示未接受服务
-    int playTime; //in second
-    bool isVIP;
-};
-Table tables[MAXK];
-Pair pairs[MAXN];
-vector<int> pairs2; //保存排序好的pairs副本, 静态指针数组
-
-vector<int> tablesQue;
-vector<int> pairsQue;
-bool inq[MAXK] = {false};
-
-bool Comp(int a, int b){
-    return pairs[a].arriveTime < pairs[b].arriveTime;
-}
-bool Comp2(int a, int b){
-    return pairs[a].serveTime < pairs[b].serveTime;
-}
-
-/*
-in: tablesQue
-return: -1:没有, 否则，是vip的下标
-*/
-int VipInTablesQue(){
-    int i ;
-    for(i = 0; i < tablesQue.size(); i++){
-        if(tables[tablesQue[i]].isVIP == true)
-            return i;
-    }
-    return -1;
-}
-int VipInPairsQue(){
-    int i;
-    for(i = 0; i < pairsQue.size(); i++){
-        if(pairs[pairsQue[i]].isVIP == true)
-            return i;
-    }
-    return -1;
-}
-/*
-tables[tablesQue[c]]和pairs[pairsQue[d]]配对了，更新操作,pairs,tables,pairsQue,tablesQue
-*/
-void Update(int c, int d){
-    int a = tablesQue[c];
-    int b = pairsQue[d];
-    pairs[b].serveTime = max(pairs[b].arriveTime, tables[a].popTime);
-    tables[a].popTime = pairs[b].serveTime + min(pairs[b].playTime,7200); //最多玩2h
-    tables[a].servePairNum++;
-    tablesQue.erase(tablesQue.begin()+c);
-    inq[a] = false;
-    pairsQue.erase(pairsQue.begin()+d);
-}
-
-int main(){
-    //freopen("D:\\input.txt", "r", stdin);
-
-    scanf("%d",&n);
-    for(int i=1;i<=n;i++){
-        int hh,mm,ss,time,flag;
-        //scanf("%d:%d:%d %d:%d:%d %d %d\n",&hh,&mm,&ss,&time,&flag);
-        scanf("%d:%d:%d %d %d\n",&hh,&mm,&ss,&time,&flag);
-        pairs[i].arriveTime = hh*3600 + mm*60 + ss;
-        pairs[i].playTime = time*60;
-        pairs[i].isVIP = (flag == 1) ? true : false;
-        pairs[i].serveTime = 0;
-        pairs2.push_back(i);
-    }
-    scanf("%d %d\n",&k,&m);
-    for(int i=1; i<=k; i++){
-        tables[i].isVIP = false;
-        tables[i].popTime = 8*3600;
-        tables[i].servePairNum = 0;
-    }
-    for(int i=0;i<m;i++){
-        int a;
-        scanf("%d",&a);
-        //tables[i].isVIP = true;
-        tables[a].isVIP = true;
-    }
-
-    sort(pairs2.begin(),pairs2.end(),Comp); //pairs副本按照到达时间由小到大排序
-
-    int i = 0;
-    while(true){
-		int minpop = INF;
-    	vector<int> mintables;
-    	for(int j=1; j<=k; j++){
-    	    if(inq[j] == false && tables[j].popTime < minpop){
-    	        minpop = tables[j].popTime;
-    	        mintables.clear();
-    	        mintables.push_back(j);
-    	    }else if(inq[j] == false && tables[j].popTime == minpop){
-    	        mintables.push_back(j);
-    	    }
-    	}
-    	
-        //如何退出循环
-    	if(minpop >= 21*3600 && i == n){ //说明一些用户在21点之前不能得到桌子; minpop>=17*3600
-    	    //return false;
-            break;
-    	}else if(i < n){
-    		int player = pairs2[i];
-    		if(pairs[player].arriveTime < minpop){
-    		    pairsQue.push_back(player);
-    		    i++;
-    		}else if(pairs[player].arriveTime == minpop){
-    		    pairsQue.push_back(player);
-    		    i++;
-    		    for(int j=0; j<mintables.size(); j++){
-    		        tablesQue.push_back(mintables[j]);
-    		        inq[mintables[j]] = true;
-    		    }
-    		    sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    		}else{
-    		    for(int j=0; j<mintables.size(); j++){
-    		        tablesQue.push_back(mintables[j]);
-    		        inq[mintables[j]] = true;
-    		    }
-    		    sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    		}
-    	}else if(minpop < 21*3600){ //minpop < 17*3600
-    	    for(int j=0; j<mintables.size(); j++){
-    		    tablesQue.push_back(mintables[j]);
-    		    inq[mintables[j]] = true;
-    		}
-    		sort(tablesQue.begin(),tablesQue.end()); //按照编号从小到大排序
-    	}
-    	//return true;
-        
-        //如何退出循环
-		if(i == n && pairsQue.empty()) //说明所有玩家都可以顺利玩完游戏
-            break;
-                       
-        while(!tablesQue.empty() && !pairsQue.empty()){
-            int a = VipInTablesQue();
-            if(a != -1){ //队列中有VIP桌子
-                int b = VipInPairsQue();
-                if(b != -1){ //队列中有VIP
-                    Update(a,b);
-                }else{
-                    //Update(a,0);
-                    Update(0,0);
-                }
-            }else{
-                Update(0,0);
-            }
-        }
-    }
-    
-    sort(pairs2.begin(),pairs2.end(),Comp2); //按照serveTime排序
-    for(i=0; i<pairs2.size();i++){
-        int a = pairs2[i];
-        if(pairs[a].serveTime != 0){
-            int time1 = pairs[a].arriveTime;
-            int time2 = pairs[a].serveTime;
-            //int h1 = time1/3600, m1 = (time1-time1/3600)/60, s1 = (time1-time1/3600)%60;
-            //int h2 = time2/3600, m2 = (time2-time2/3600)/60, s2 = (time2-time2/3600)%60;
-            int h1 = time1/3600, m1 = (time1%3600)/60, s1 = (time1%3600)%60;
-            int h2 = time2/3600, m2 = (time2%3600)/60, s2 = (time2%3600)%60;
-            printf("%02d:%02d:%02d %02d:%02d:%02d %.0f\n",h1,m1,s1,h2,m2,s2,round((time2-time1)/60.0));
-        }
-    }
-    for(i=1; i<=k; i++){
-        if(i == 1){
-            printf("%d",tables[i].servePairNum);
-        }else{
-            printf(" %d",tables[i].servePairNum);
-        }
-    }
-}
-```
-
-还是有两个测试点没过
-
-错误分析：
-
-1. 逻辑错误：如何退出循环，117和150行。
-2. 细节错误：119行, 142行
-
-```cpp
-//v2.1
-/*
-基于迭代客户数组的方法，业务逻辑比v1复杂，但是退出循环的逻辑比v1简单。
-遍历一个player，并且取出所有table中最早pop的，然后分情况：(vip,vip)(vip,no vip)(n0 vip,vip)(np vip,vip)
-*/
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<queue>
-#include<vector>
-#include<algorithm>
-#include<cmath>
-using namespace std;
-
-struct Table{
-    int popTime;
-    bool vip;
-    int serveNum;
-    Table(){popTime = 8*3600; vip = false; serveNum = 0;}
-};
-struct Player{
-    int arriveTime;
-    int pTime;
-    int startTime;
-    bool vip;
-    bool played; //只针对vip=true的player
-    Player(){startTime = -1; played = false;}
-};
-
-const int MAXN = 1e4+5;
-const int MAXK = 105;
-const int INF = 1e8+5;
-int n,k;
-
-Player players[MAXN]; //0--n-1
-Table tables[MAXK]; //1-n
-
-bool Comp(Player a, Player b){
-    return a.arriveTime < b.arriveTime;
-}
-
-bool Comp2(Player a, Player b){
-    return a.startTime < b.startTime;
-}
-
-void Update(int pindex, int tindex){ //更新players[pindex],tables[tindex]
-    players[pindex].startTime = max(players[pindex].arriveTime, tables[tindex].popTime);
-    players[pindex].played = true;
-    tables[tindex].popTime = players[pindex].startTime + min(players[pindex].pTime, 7200); //tables[tindex].popTime = players[pindex].arriveTime + players[pindex];
-    tables[tindex].serveNum++;
-}
-
-int main(){
-    //初始化
-    for(int i=0; i<MAXN; i++){
-        players[i] = Player();
-    }
-    for(int i=0; i<MAXK; i++){
-        tables[i] = Table();
-    }
-
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    int hh,mm,ss,time,flag;
-    for(int i=0; i<n; i++){
-        scanf("%d:%d:%d %d %d",&hh,&mm,&ss,&time,&flag);
-        players[i].arriveTime = hh*3600 + mm*60 + ss;
-        players[i].pTime = time*60;
-        players[i].vip = flag == 1 ? true : false;
-    }
-    sort(players, players+n, Comp);
-    int m;
-    scanf("%d %d",&k,&m);
-    for(int i=0; i<m; i++){
-        int a;
-        scanf("%d",&a);
-        tables[a].vip = true;
-    }
-
-    int i = 0;
-    while(i < n){
-        if(players[i].arriveTime >= 21*3600)
-            break;
-        int minpop = INF, mintable;
-        for(int j=1; j<=k; j++){
-            if(tables[j].popTime < minpop){
-                minpop = tables[j].popTime;
-                mintable = j;
-            }
-        }
-        if(minpop >= 21*3600) //if(minpop >= 17*3600)
-            break;
-        if(players[i].vip && tables[mintable].vip){
-            if(players[i].played == false)
-                Update(i, mintable);
-            i++;
-        }else if(players[i].vip && !tables[mintable].vip){
-		    //要考虑table.poptime < player.arriveTime的情况，此时table和player之间可能夹杂着
-            //VIP table，例如table table_vip player，此时要把player和table_vip匹配
-            if(players[i].played == false){
-                /*int vipTableIndex = -1;
-                for(int j=1; j<=k; j++){ //for(int j=mintable+1; j<=k; j++)
-                    if(tables[j].vip && tables[j].popTime <= players[i].arriveTime){
-                        vipTableIndex = j;
-                        break;
-                    }
-                }
-                if(vipTableIndex != -1){
-                    Update(i, vipTableIndex);
-                }else{
-                    Update(i, mintable);
-                }*/
-                //上面的写法是错的。考虑一个例子：table1在1点空闲，table3_vip在2点空闲, table4_vip在2点空闲，table2_vip在3点空闲，player1在4点到来
-                //若按照上面的写法，则player1和table2_vip匹配，是错误的，player1应该和table3_vip匹配，也就是：player1应该找目前最早pop的VIP且编号最小的VIP table
-                //在原文的体现是：When a VIP table is open, the first VIP pair in the queue will have the priviledge to take it
-                //说实话，这个条件是在太隐形了，不考虑也没有关系。
-                int vipTableIndex = -1, minVipTablePop = INF;
-                for(int j=1; j<=k; j++){
-                    if(tables[j].vip && tables[j].popTime < minVipTablePop){
-                        vipTableIndex = j;
-                        minVipTablePop = tables[j].popTime;
-                    }
-                }
-                if(vipTableIndex != -1 && tables[vipTableIndex].popTime <= players[i].arriveTime){
-                    Update(i, vipTableIndex);
-                }else{
-                    Update(i, mintable);
-                }
-            }
-            i++;
-        }else if(!players[i].vip && tables[mintable].vip){
-            /*int vipIndex = -1;
-            for(int j=i+1; j<n; j++){
-                if(players[j].vip && players[j].arriveTime<=tables[mintable].popTime && players[j].played==false){
-
-                }
-            }*/
-            if(players[i].arriveTime >= tables[mintable].popTime){
-                Update(i, mintable); //Update(i, minpop)
-                i++;
-            }else{
-                int vipIndex = -1;
-                for(int j=i+1; j<n; j++){
-                    if(players[j].arriveTime > tables[mintable].popTime)
-                        break;
-                    if(players[j].vip && players[j].played == false){
-                        vipIndex = j;
-                        break;
-                    }
-                }
-                if(vipIndex != -1){
-                    Update(vipIndex, mintable);
-                }else{
-                    Update(i, mintable);
-                    i++;
-                }
-            }
-        }else{
-            Update(i, mintable);
-            i++;
-        }
-    }
-
-    sort(players, players+n, Comp2);
-    for(i=0; i<n; i++){
-        if(players[i].startTime != -1){
-            int time1 = players[i].arriveTime;
-            int time2 = players[i].startTime;
-            //int h1 = time1/3600, m1 = (time1-time1/3600)/60, s1 = (time1-time1/3600)%60;
-            //int h2 = time2/3600, m2 = (time2-time2/3600)/60, s2 = (time2-time2/3600)%60;
-            int h1 = time1/3600, m1 = (time1%3600)/60, s1 = (time1%3600)%60;
-            int h2 = time2/3600, m2 = (time2%3600)/60, s2 = (time2%3600)%60;
-            printf("%02d:%02d:%02d %02d:%02d:%02d %.0f\n",h1,m1,s1,h2,m2,s2,round((time2-time1)/60.0));
-        }
-    }
-    for(i=1; i<=k; i++){
-        if(i == 1){
-            printf("%d",tables[i].serveNum);
-        }else{
-            printf(" %d",tables[i].serveNum);
-        }
-    }
-}
-```
-
-错误分析：
-
-1. 细节错误：48行，90行
-
-# A1029 Median
+# A1019 General Palindromic Number
 
 ```cpp
 //freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 2e5+5;
-int n1,n2;
-int num[2*MAXN];
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n1);
-    for(int i=1; i<n1+1; i++){
-        scanf("%d",&num[i]);
-    }
-    scanf("%d",&n2);
-    for(int i=n1+1; i<n1+n2+1; i++){
-        scanf("%d",&num[i]);
-    }
-    sort(num+1,num+n1+n2+1);
-    printf("%d",num[(1+n1+n2)/2]);
-}
-
-```
-
-# A1030 Travel Plan
-
-```cpp
-#include<cstdio>
-#include<vector>
-#include<cstring>
-#include<algorithm>
-using namespace std;
-
-const int MAXV = 510;
-const int INF = 1e9;
-
-int n, m, st, ed; //城市个数，高铁（无向边）个数，起点，终点
-int city1, city2, dist, cost;
-int G[MAXV][MAXV] = { INF }, Cost[MAXV][MAXV] = { 0 }; //邻接表，花费表
-int Dist[MAXV] = { INF }; //最短距离表
-vector<int> Pre[MAXV]; //前驱节点表
-
-int optCost = INF; //最优cost
-vector<int> path, tempPath; //cost度量下最优路径，临时路径
-
-void Dijkstra(int s) {
-	/*s是起点，找所有最短路径，以前驱表的形式输出:Pre*/
-	bool vis[MAXV] = { false }; //结点是否被访问过
-    fill(Dist, Dist + MAXV, INF);
-    Dist[s] = 0;
-	
-    for(int k=0;k<n;k++){
-		int u = -1; //正在访问的结点
-		int min = INF;
-		for (int i = 0; i < n; i++) {
-			if (vis[i] == false && Dist[i] < min) {
-				u = i;
-				min = Dist[i];
-			}
-		}
-		if (u == -1) return; //结束
-    	vis[u] = true;
-		for (int i = 0; i < n; i++) {
-			if (vis[i] == false && G[u][i] != INF) { //如果没有被访问且可到达
-				if (Dist[u] + G[u][i] < Dist[i]) { //如果经过u的路径较优
-					Dist[i] = Dist[u] + G[u][i];
-					Pre[i].clear();
-					Pre[i].push_back(u);
-				}
-				else if (Dist[u] + G[u][i] == Dist[i]) { //如果经过u的路径与原来的一样优
-					Pre[i].push_back(u);
-				}
-			}
-		}
-    }
-}
-
-void DFS(int v) { //v为当前结点
-	/*输出在optCost,path*/
-	if (v == st) { //如果到达叶子结点
-		tempPath.push_back(v); //将当前结点放到tempPath最后
-
-		int value = 0; //计算二次度量标准cost
-		int pre = tempPath[tempPath.size() - 1];
-		for (int i = tempPath.size() - 2; i >= 0; i--) {
-			value += Cost[pre][tempPath.at(i)];
-			pre = tempPath.at(i);
-		}
-
-		if (value < optCost) { //如果这个路径的较优
-			optCost = value; //更新optCost
-			path = tempPath; //更新最优路径
-		}
-		tempPath.pop_back();
-		return;
-	}
-	tempPath.push_back(v);
-	for (int i = 0; i < Pre[v].size(); i++) {
-		DFS(Pre[v].at(i));
-	}
-	tempPath.pop_back();
-}
-
-int main() {
-	//初始化
-	fill(G[0], G[0] + MAXV * MAXV, INF);
-	fill(Cost[0], Cost[0] + MAXV * MAXV, 0);
-
-	scanf("%d%d%d%d", &n, &m, &st, &ed);
-	for (int i = 0; i < m; i++) {
-		scanf("%d%d%d%d", &city1, &city2, &dist, &cost);
-		G[city1][city2] = G[city2][city1] = dist;
-		Cost[city1][city2] = Cost[city2][city1] = cost;
-	}
-	Dijkstra(st);
-	DFS(ed);
-	for (int i = path.size() - 1; i >= 0; i--) {
-		printf("%d ", path.at(i));
-	}
-	printf("%d %d", Dist[ed], optCost);
-}
-```
-
-错误:
-
-1. 35行，忘了更新vis数组
-2. fill(Dist, Dist + MAXV, INF);而不是fill(Dist[0], Dist[0] + MAXV, INF);因为Dist[0]是数字，而不是地址
-3. Dijkstra()算法中，对距离表的初始化出现问题，忘了加23行那段代码。
-4. 56行定义的value必须初始化，否则value的初值不一定。
-
-# A1032 Sharing
-
-```cpp
-#include<cstdio>
-using namespace std;
-
-struct Node{
-    char data;
-    int next;
-    bool flag; //表示第一条链表是否占用过这个结点
-};
-
-const int MAXN = 1e5+5;
-int addr1,addr2,n; //首地址1，首地址2，n行
-int addr,next; //结点地址，下一个结点地址，next=-1表示NULL
-char data; //数据
-Node nodes[MAXN]; //存放结点
-int p; //存放迭代的地址
-
-int main(){
-    //初始化
-    for(int i=0;i<MAXN;i++){
-        nodes[i].flag = false;
-    }
-    
-    scanf("%d%d%d",&addr1,&addr2,&n);
-    for(int i=0;i<n;i++){
-        scanf("%d %c %d",&addr,&data,&next);
-        nodes[addr].data = data;
-        nodes[addr].next = next;
-    }
-    for(p=addr1;p!=-1;p=nodes[p].next){
-        nodes[p].flag = true;
-    }
-    for(p=addr2;p!=-1;p=nodes[p].next){
-        if(nodes[p].flag == true)
-            break;
-    }
-    if(p!=-1)
-        printf("%05d\n",p);
-    else
-        printf("-1\n");
-    
-    return 0;
-}
-```
-
-错误分析：
-
-1. 37行，没有按照5位数字的格式输出
-
-
-
-# A1033 To Fill or Not to Fill
-
-```cpp
-/*
-基本思想：贪心方法。
-*/
-#include<cstdio>
-#include<cmath>
-#include<algorithm>
-#include<vector>
-using namespace std;
-
-struct Station{
-    double p; //单价
-    int d; //距离杭州的距离
-};
-
-const int MAXN = 505;
-int cmax, d, darg, n; //最大容量，与终点的距离，每单位的油气跑多远，加油站个数
-Station stations[MAXN];
-
-bool Comp(Station a, Station b){
-    return a.d < b.d;
-}
-int main(){
-    //freopen("D:\\input.txt", "r", stdin);
-
-    scanf("%d %d %d %d\n",&cmax,&d,&darg,&n);
-    for(int i = 1; i <= n; i++){
-        double p;
-        int dist;
-        scanf("%lf %d",&p,&dist);
-        stations[i].p = p;
-        stations[i].d = dist;
-    }
-    sort(stations+1,stations+n+1,Comp);
-
-    double money = 0.0, dist = 0.0, leftGas = 0.0, maxDist = cmax*darg;
-    int staNum = 1;
-    while(dist < (double)d){
-        //测试
-        //printf("staNum=%d dist=%.2f money=%.2f leftGas=%.2f\n",staNum,dist,money,leftGas);
-
-        if(stations[1].d != 0){
-            break;
-        }
-        vector<int> v; //存储所能到达的站点
-        for(int i=staNum+1; i<=n; i++){
-            if(stations[i].d - stations[staNum].d <= maxDist){
-                v.push_back(i);
-            }else{
-                break;
-            }
-        }
-
-        if(v.size() == 0){
-            if(stations[staNum].d + maxDist < d){
-                dist += maxDist;
-                break;
-            }else{ //下一个站点就是终点
-                double a = max((d - stations[staNum].d)/(double)darg - leftGas, 0.0); //需要加的油
-                money += a*stations[staNum].p;
-                dist = d;
-            }
-        }else{
-            int i;
-            for(i=0; i<v.size(); i++){
-                if(stations[v[i]].p < stations[staNum].p)
-                    break;
-            }
-            if(i < v.size()){ //可达的站点中有价格比现在的低的
-                double a = max((stations[v[i]].d - stations[staNum].d)/(double)darg - leftGas, 0.0);
-                //测试
-                //printf("staNum=%d I need gas=%.2f\n",staNum,a);
-
-                money += a*stations[staNum].p;
-                leftGas = leftGas + a - (stations[v[i]].d - stations[staNum].d)/(double)darg;
-                dist = stations[v[i]].d;
-                staNum = v[i];
-            }else{ //可达的站点中没有价格比现在低的
-                 if(stations[staNum].d + maxDist >= d){ //如果能到达终点
-                    double a = max((d - stations[staNum].d)/(double)darg - leftGas, 0.0);
-                    money += a*stations[staNum].p;
-                    dist = d;
-                 }else{ //如果不能到达终点
-                    double a = max(cmax - leftGas, 0.0);
-                    money += a*stations[staNum].p;
-                    leftGas = leftGas + a - (stations[staNum+1].d - stations[staNum].d)/(double)darg;
-                    dist = stations[staNum+1].d;
-                    staNum = staNum+1;
-                 }
-            }
-        }
-    }
-
-    if(dist < (double)d){
-        printf("The maximum travel distance = %.2f\n",dist);
-    }else{
-        printf("%.2f\n",money);
-    }
-}
-
-```
-
-错误分析：
-
-1. 细节错误：29行。对double类型的输入用``scanf("%lf",&d)`` 而不是 ``%f`` ，否则会接受不到值
-
-# A1034 head of gang
-
-为什么不用邻接表法，因为邻接表法对删除边的操作不方便。一般情况下用邻接矩阵法。
-
-```cpp
-#include<cstdio>
-#include<string>
-#include<map>
-#include<iostream>
-using namespace std;
-
-const int MAXN = 2005;
-int n, k; //n行数据，k表示threshold
-string name1, name2; //输入的具有联系的两个人的姓名
-int time1; //两个人的联系时间
-int weight[MAXN] = {0}; //存储点权
-int G[MAXN][MAXN] = {0}; //邻接表
-int numPerson = 0; //总人数
-map<int, string> intToString; //编号到姓名
-map<string, int> stringToInt; //姓名到编号
-map<string, int> gang; //头目和帮会人数
-bool vis[MAXN] = { false };
-
-int change(string str) {
-	/*核心函数，根据str返回对应的编号：若能找到编号，则返回；否则，插入编号-姓名对应关系，顺便更改总人数numPerson*/
-	if (stringToInt.find(str) != stringToInt.end()) { //如果能在map中找到str
-		return stringToInt[str]; //返回编号
-	}
-	else {
-		stringToInt[str] = numPerson; //str的编号为总人数
-		intToString[numPerson] = str; //numPerson对应str
-		return numPerson++;
-	}
-}
-
-void DFS(int nowVisit, int& head, int& numMember, int& totalValue) {
-	/*遍历过程中，记录头目是谁，帮会总人数，总边权*/
-	numMember++; //帮会人数加1
-	if (weight[nowVisit] > weight[head]) //更新帮会的头目head
-		head = nowVisit;
-	vis[nowVisit] = true; //标记此结点已访问
-	for (int i = 0; i < numPerson; i++) {
-		if (G[nowVisit][i] > 0) { //如果与相邻点联系的边存在
-			totalValue += G[nowVisit][i]; //更新总边权
-			G[nowVisit][i] = G[i][nowVisit] = 0; //删除双向边
-			if (vis[i] == false) { //如果这个点未被访问，则访问它
-				DFS(i, head, numMember, totalValue);
-			}
-		}
-	}
-}
-
-void DFSTrave() {
-	/*遍历整个图，获取联通块的信息*/
-	for (int i = 0; i < numPerson; i++) {
-		if (vis[i] == false) { //如果这个点未被访问,则通过它获得一个帮会的信息
-			int head = i, numMember = 0, totalValue = 0;
-			DFS(i, head, numMember, totalValue);
-			if (numMember > 2 && totalValue > k) { //如果这个cluster的总边权大于阈值
-				gang[intToString[head]] = numMember; //保存这个帮会
-			}
-		}
-	}
-}
-
-int main() {
-	cin >> n >> k;
-	for (int i = 0; i < n; i++) {
-		cin >> name1 >> name2 >> time1;
-		int id1 = change(name1);
-		int id2 = change(name2);
-		weight[id1] += time1;
-		weight[id2] += time1;
-		G[id1][id2] += time1;
-		G[id2][id1] += time1;
-	}
-	DFSTrave();
-	printf("%d\n", gang.size());
-	map<string, int>::iterator it;
-	for (it = gang.begin(); it != gang.end(); it++) {
-		cout << it->first << " " << it->second << endl;
-	}
-
-	return 0;
-}
-```
-
-错误分析：
-
-1. 53行：gang是string 到 int的map，所以在更新gang时，要把编号换成姓名
-2. 39行：更新总边权totalValue出错，将点权累加进去了
-3. 54行：if条件少了，少考虑了帮会人数大于2的条件
-4. 69和70行：更新邻接图时，应该将通话时间累加上去，而不是单纯地赋值，因为在输入中，可能出现相同的名字对，表示两个罪犯不同的通话记录。
-
-# A1038 Recover the smallest number
-
-```cpp
-#include<algorithm>
-#include<cstdio>
-#include<string>
-#include<vector>
-#include<iostream>
-using namespace std;
-
-vector<string> vs;
-
-bool Comp(string& s1, string& s2){
-    return s1 + s2 < s2 + s1;
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-
-    int n;
-    scanf("%d ",&n);
-    for(int i=0; i<n; i++){
-        string s;
-        cin >> s;
-        vs.push_back(s);
-    }
-    sort(vs.begin(), vs.end(), Comp);
-
-    /*vector<string>::iterator it;
-    for(it = vs.begin(); it != vs.end(); it++){
-        if(it == vs.begin()){
-            string s = (*it);
-            int i;
-            for(i=0; i<s.size(); i++){
-                if(s[i] != '0')
-                    break;
-            }
-            s = s.substr(i);
-            cout << s;
-        }else{
-            cout << (*it);
-        }
-    }*/
-    string result;
-    for(int i=0;i<vs.size();i++){
-        result += vs[i];
-    }
-    int i = 0;
-    while(result[i] == '0')
-        i++;
-    result = result.substr(i);
-    if(result.size() == 0){
-        cout << "0";
-    }else{
-        cout << result;
-    }
-}
-
-```
-
-# A1039 Course List for Student
-
-```cpp
-/*
-基本思路1：用map<string,vector<int>>存储每个学生的所有课程
-基本思路2：由于string查询会慢，再加上题目中的学生姓名是只有4个字符的，所以用简单的hash来转换字符串
-为数字，然后建立vector<int> couList[MAXN],couList[hash(nameStr)]来得到学生的课程列表
-*/
-```
-
-
-
-# A1043 Is it a Binary Search Tree
-
-```cpp
-#include<cstdio>
-#include<vector>
-using namespace std;
-
-struct Node{
-    int data; //数据域
-    Node *left,*right;
-    Node(int d){data = d; left = right = nullptr;}
-};
-
-int n; //n个结点的二叉查找树
-vector<int> Origin; //保存原始的输入序列
-
-void Insert(Node* &root, int data){
-    if(root == nullptr){ //如果到叶子结点后面了
-        root = new Node(data);
-        return;
-    }
-    if(data < root->data) Insert(root->left,data);
-    else Insert(root->right,data); //若data大于等于root的，插在右子树
-}
-
-void preOrder(Node* root,vector<int>&vi){
-    if(!root) return;
-    vi.push_back(root->data);
-    preOrder(root->left,vi);
-    preOrder(root->right,vi);
-}
-void preOrderMirror(Node* root,vector<int>&vi){ //遍历镜像树，只需更改递归调用的顺序
-    if(!root) return;
-    vi.push_back(root->data);
-    preOrderMirror(root->right,vi);
-    preOrderMirror(root->left,vi);
-}
-void postOrder(Node* root,vector<int>&vi){
-    if(!root) return;
-    postOrder(root->left,vi);
-    postOrder(root->right,vi);
-    vi.push_back(root->data);
-}
-void postOrderMirror(Node* root,vector<int>&vi){
-    if(!root) return;
-    postOrderMirror(root->right,vi);
-    postOrderMirror(root->left,vi);
-    vi.push_back(root->data);
-}
-
-int main(){
-    scanf("%d",&n);
-    for(int i=0;i<n;i++){
-        int a;
-        scanf("%d",&a);
-        Origin.push_back(a);
-    }
-    vector<int> pre;
-    vector<int> preM;
-    vector<int> post;
-    vector<int> postM;
-    //创建BST
-    Node* root = nullptr;
-    for(int i=0;i<n;i++){
-        Insert(root,Origin[i]);
-    }
-    
-    preOrder(root,pre); //先序遍历序列
-    preOrderMirror(root,preM); //镜像先序遍历序列
-    if(Origin == pre){ //如果原序列与先序相同
-        printf("YES\n");
-        postOrder(root,post);
-        //输出
-        printf("%d",post[0]);
-        for(int i=1;i<n;i++){
-            printf(" %d",post[i]);
-        }
-    }else if(Origin == preM){ //如果原序列与镜像先序相同
-        printf("YES\n");
-        postOrderMirror(root,postM);
-        //输出
-        printf("%d",postM[0]);
-        for(int i=1;i<n;i++){
-            printf(" %d",postM[i]);
-        }
-    }else{
-        printf("NO\n");
-    }
-}
-```
-
-# *A1044 Shopping in Mars
-
-```cpp
-/*
-基本思路1：
-（1）有两个指针i,j，i=0，
-（2）j递增，找一个j使差值diff=num[i]+...+num[j]-15>=0的最小的j或j=n(15是要付的钱)，若
-大于等于0，则diff与目前最小的差值比较并进行必要的保存i,j对的操作和数据更新操作，i++，回到(2);若小于0，则说明后面不可能有足够的钱了，则到（3）
-（3）看保存的i,j对，输出。
-所以思路1可以概括为双指针迭代法，i,j指针不断向前移动
-*/
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<algorithm>
-#include<vector>
-using namespace std;
-
-const int MAXN = 1e5+5;
-int n,m;
-int num[MAXN];
-
-bool Comp(pair<int,int> a, pair<int,int> b){
-    return a.first < b.first;
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d %d",&n,&m);
-    for(int i=1; i<=n; i++){
-        scanf("%d",&num[i]);
-    }
-
-    int i = 1, j = 1; //[i,j)
-    vector<pair<int,int> > pairs;
-    int summ = 0;
-    int minDiff = 1e8+5;
-    while(i <=n && j <= n){
-        if(j == i){
-            summ += num[j++];
-        }
-        while(j <= n && summ+num[j] < m){
-            summ += num[j++];
-        }
-        if(summ < m){
-            if(j <= n){ //
-                summ += num[j++];
-            }
-        }
-        //printf("i=%d j=%d num[i]=%d num[j-1]=%d summ=%d\n",i,j,num[i],num[j-1],summ);
-        if(summ < m){
-            break;
-        }else{
-            int temp = summ - m;
-            if(temp < minDiff){
-                minDiff = temp;
-                pairs.clear();
-                pairs.push_back(pair<int,int>(i,j));
-            }else if(temp == minDiff){ //
-                pairs.push_back(pair<int,int>(i,j));
-            }
-            if(summ == m){
-                i++;
-                if(i<=n && j<=n){
-                    summ -= num[i-1];
-                }
-            }else{
-                /*i++; j--;
-                summ -= num[i-1];
-                summ -= num[j+1];*/
-                if(j-i > 1){
-                    i++; j--;
-                    summ -= num[i-1];
-                    summ -= num[j];
-                }else{
-                    i++;
-                    summ -= num[i-1];
-                }
-            }
-        }
-    }
-    sort(pairs.begin(), pairs.end(), Comp);
-    for(i = 0; i < pairs.size(); i++){
-        printf("%d-%d\n",pairs[i].first,pairs[i].second-1);
-    }
-}
-
-```
-
-
-
-# A1046 Shortest Distance
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<cmath>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 1e4+5;
-int n,m;
-int dist[MAXN][MAXN];
-
-int getDist(int a, int b){ //b >= a
-    if(b < a){ //swap
-        int temp = a;
-        a = b;
-        b = temp;
-    }
-    if(dist[a][b] != -1){
-        return dist[a][b];
-    }else if(dist[a+1][b] != -1){
-        int res = dist[a][a+1] + dist[a+1][b];
-        dist[a][b] = res; //更新dist数组
-        return res;
-    }else{
-        int res = dist[a][a+1] + getDist(a+1,b);
-        dist[a][b] = res; //更新dist数组
-        return res;
-    }
-}
-int getDist2(int a, int b){ //b >= a
-    if(b < a){ //swap
-        int temp = a;
-        a = b;
-        b = temp;
-    }
-    int next = b == n ? 1 : b+1;
-    if(dist[b][a] != -1){
-        return dist[b][a];
-    }else if(dist[next][a] != -1){
-        int res = dist[b][next] + dist[next][a];
-        dist[b][a] = res;
-        return res;
-    }else{
-        int res = dist[b][next] + getDist(next,a);
-        dist[b][a] = res;
-        return res;
-    }
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    for(int i=1; i<=n; i++){
-        for(int j=1; j<=n; j++){
-            if(i == j){
-                dist[i][j] = 0;
-            }else{
-                dist[i][j] = -1;
-            }
-        }
-    }
-    for(int i=1; i<=n; i++){
-        int a;
-        scanf("%d",&a);
-        if(i != n){
-            dist[i][i+1] = a;
-            dist[i+1][i] = a;
-        }else{
-            dist[1][n] = a;
-            dist[n][1] = a;
-        }
-    }
-
-    scanf("%d",&m);
-    int a,b;
-    for(int i = 0; i<m; i++){
-        scanf("%d %d",&a,&b);
-        printf("%d\n",min(getDist(a,b),getDist2(a,b)));
-    }
-}
-
-```
-
-错误分析：
-
-1. 通过设置MAXN*MAXN的数组来记录i-->j和j-->i的距离，但是这样做仍然运行超时。观察我的核心函数``getDist()``, 有一个缺陷：假设``dist[1][5]记录了，但是要找dist[1][6]，我的函数会先看dist[2][6]有没有记录，再看dist[3][6]有没有，这样造成一个问题是记录的1到5的距离并没有用到，其实，只要算dist[1][5]+dist[5][6]就可以了，导致算法运行超时``.
-2. 我的设计有缺陷：这题是考环的性质，若算出了``dist[1][5]``，那么自然地``dist[5][1] = 环长 - dist[1][5]``， 不用再计算``dist[5][1]``；还有，其实不用算``dist[1][2], dist[1][3],dist[4][7]之类的，只用记录dist[1][i],2<=i<=n, dist[i][j]=dist[1][j]-dist[1][i]``
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 1e5+5;
-int n,m;
-int dist[MAXN] = {0}; //dist[i]是1到i+1的距离,dist[n]是环的总长度
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    for(int i=1; i<=n; i++){
-        int a;
-        scanf("%d",&a);
-        dist[i] = dist[i-1] + a;
-    }
-
-    scanf("%d",&m);
-    int a,b;
-    for(int i = 0; i<m; i++){
-        scanf("%d %d",&a,&b);
-        int t = abs(dist[b-1] - dist[a-1]);
-        printf("%d\n",min(t, dist[n]-t));
-    }
-}
-
-```
-
-# A1047 Student List for Course
-
-```cpp
 #include<bits/stdc++.h>
 using namespace std;
-
-const int MAXN = 40005;
-vector<int>course[50002];
-char int2name[MAXN][5];
-
-//题意:把每个课程对应的选课人，按选课人名称顺序输出
-//考察：stl使用
-//注意：  cin cout 超时问题
-
-bool Comp(int a, int b){
-    return strcmp(int2name[a],int2name[b]) < 0;
-}
+int n,b;
 int main(){
-
-    int n,k;
-    scanf("%d %d",&n,&k);
-
-    for(int i=1;i<=n;++i){
-        int c,x;
-        string s;
-        cin>>s>>c;
-        strcpy(int2name[i],s.c_str());
-        //选的课程
-        for(int j=1;j<=c;++j){
-            scanf("%d",&x);
-            course[x].push_back(i);
-        }
-    }
-    for(int i=1;i<=k;++i){
-        printf("%d %d\n",i,course[i].size());
-        sort(course[i].begin(),course[i].end(),Comp);
-        for(int j=0;j<course[i].size();++j)
-            printf("%s\n",int2name[course[i][j]]);
-            //cout<<int2name[course[i][j]]<<endl;
-    }
-    return 0;
-}
-```
-
-错误分析：
-
-1. 运行超时：36行，使用cout输出比printf慢了很多，因此在有超多输出的情况下，如题目中的最多40000*50000个输出，会导致超时。
-
-# A1048 Find Coins
-
-```cpp
-/*
-这种问题虽然不是动态规划，但可以用解决动态规划的dp法则去解决这类问题。比如要将一段输入排序为
-num = 1 2 2 4 7 8 11 15。
-dp[i]=j(j>=i),如果num[i]+num[j]==15，或者num[i]+num[j]<15的最大j，或者num[i]+num[j]>15的
-最小的j
-*/
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 1e5+5;
-int n,m;
-int num[MAXN];
-int dp[MAXN]; //存储使num[i]+num[j]<=15的使j>=i的最小的j
-
-int  main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d %d",&n,&m);
-    for(int i=0;i <n; i++){
-        scanf("%d",&num[i]);
-    }
-    sort(num, num+n);
-
-    int i = 0;
-    for(i=0; i<n; i++){
-        int j;
-        if(i == 0){
-            j = 1;
-            while(j < n && num[i]+num[j]<m)
-                j++;
-            if(j == n){
-                dp[i] = j - 1;
-            }else if(num[i]+num[j] == m){
-                dp[i] = j;
-            }else{
-                dp[i] = j - 1;
-            }
-
-        }else{
-            j = dp[i-1];
-            if(num[i]+num[j] < m){
-                while(j < n && num[i]+num[j]<m)
-                    j++;
-                if(j == n){
-                    dp[i] = j - 1;
-                }else if(num[i]+num[j] == m){
-                    dp[i] = j;
-                }else{
-                    dp[i] = j - 1;
-                }
-            }else if(num[i]+num[j] == m){
-                dp[i] = j;
-            }else{
-                j = j - 1;
-                while(j>=i && num[i]+num[j]>m)
-                    j--;
-                if(j < i){
-                    dp[i] = i;
-                }else{
-                    dp[i] = j;
-                }
-            }
-        }
-        if(j > i && num[i] + num[dp[i]] == m){
-            break;
-        }
-    }
-    if(i < n-1){
-        printf("%d %d",num[i],num[dp[i]]);
-    }else{
-        printf("No Solution");
-    }
-}
-```
-
-
-
-# A1049 Counting Ones
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<set>
-using namespace std;
-
-long long n;
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%lld",&n);
-
-    long long res = 0;
-
-    long long left,right,cur; //如86573的cur=5时，left=86, right=73
-    long long a = 10;
-    while(true){
-        cur = (n%a)/(a/10);
-        left = n/a;
-        right = (n%a)%(a/10);
-
-        if(cur == 0){
-            res += left*(a/10);
-        }else if(cur == 1){
-            res += left*(a/10)+right+1;
-        }else if(cur > 1){
-            res += (left+1)*(a/10);
-        }
-
-        if(n/a == 0){ //对于n = 86576,使循环退出的a是100000,但如果n=1073741824(2^30)，则使得循环退出的a=10000000000,a超过了int的界限
-            break;
-        }else{
-            a = a*10;
-        }
-    }
-
-    printf("%lld",res);
-}
-```
-
-错误分析：
-
-1. 语法错误：int溢出, 29行
-
-# A1050 String Subtraction
-
-```cpp
-/*
-基本思路：输入str1, str2, 删除str1中在str2出现的字符。把str2中的字符插入到set中，把str1组成链表，
-然后遍历链表，遇到一个字符，就检查是否在set中，时间复杂度为O(nlogn)。
-*/
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<set>
-using namespace std;
-
-struct Node{
-    char c;
-    Node* next;
-};
-const int MAXN = 1e4+5;
-char str1[MAXN], str2[MAXN];
-set<char> se; //保存str2中出现的字符
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    fgets(str1, MAXN, stdin);
-    fgets(str2, MAXN, stdin);
-
-    int i = 0;
-    while(str2[i] != '\n' && str2[i] != '\0'){
-        se.insert(str2[i]);
-        i++;
-    }
-
-    Node* head = new Node;
-    i = 0;
-    Node* pre = head;
-    set<char>::iterator it;
-    while(str1[i] != '\n' && str1[i] != '\0'){
-        it = se.find(str1[i]);
-        if(it == se.end()){
-            Node* node = new Node;
-            node->c = str1[i];
-            pre->next = node;
-            pre = node;
-        }
-        i++;
-    }
-    pre->next = NULL;
-
-    //输出
-    Node* cur = head->next;
-    while(cur != NULL){
-        printf("%c",cur->c);
-        cur = cur->next;
-    }
-}
-```
-
-# A1052 Linked List Sorting
-
-静态链表排序。和链表排序不一样，排序过程中，只单纯地按照数据域排序结点，破坏了最初的结点下标与结点addr域的相等关系。
-
-```cpp
-#include<cstdio>
-#include<algorithm>
-using namespace std;
-
-struct Node{
-    int addr,key,next;
-    int flag; //false表示结点未被链表占用
-};
-
-const int MAXN = 1e5+5;
-int n,begin1; //n个结点，首节点的位置
-int addr,key,next1; //结点地址，数据，下一个地址
-Node nodes[MAXN];
-
-//比较规则：若有一个结点的flag为flase，则排在后面，否则，数据大的排在后面
-bool cmp(Node a,Node b){
-    if(a.flag==false || b.flag==false){
-        return a.flag>b.flag;
-    }else{
-        return a.key<b.key;
-    }
-}
-int main(){
-    //初始化
-    for(int i=0;i<MAXN;i++){
-        nodes[i].flag = false;
-    }
-    
-    scanf("%d %d",&n,&begin1);
-    for(int i=0;i<n;i++){
-        scanf("%d %d %d",&addr,&key,&next1);
-        nodes[addr].addr = addr; //不要忘了
-        nodes[addr].key = key;
-        nodes[addr].next = next1;
-        nodes[addr].flag = true; //对链表进行标记
-    }
-    sort(nodes,nodes+MAXN,cmp); //排序
-    printf("%d %05d\n",n,nodes[0].addr);
-    for(int i=0;i<n;i++){
-        if(i!=n-1){
-            printf("%05d %d %05d\n",nodes[i].addr,nodes[i].key,nodes[i].next);
-        }else{
-            printf("%05d %d -1\n",nodes[i].addr,nodes[i].key);
-        }
-    }
-}
-```
-
-错误分析：
-
-1. 我以为输入的n个结点就是链表，其实不是的，输入的n个节点的一部分是链表。错误体现在35行
-
-```cpp
-#include<cstdio>
-#include<algorithm>
-using namespace std;
-
-struct Node{
-    int addr,key,next;
-    bool flag; //false表示结点未被链表占用
-};
-
-const int MAXN = 100005;
-int n,head; //n个结点，首节点的位置
-int addr,key,next_addr; //结点地址，数据，下一个地址
-Node nodes[MAXN];
-int cnt = 0; //链表中结点数量
-
-//比较规则：若有一个结点的flag为flase，则排在后面，否则，数据大的排在后面
-bool cmp(Node a,Node b){
-    if(a.flag==false || b.flag==false){
-        return a.flag>b.flag;
-    }else{
-        return a.key<b.key; //升序排列
-    }
-}
-
-int main(){
-    //初始化
-    for(int i=0;i<MAXN;i++){
-        nodes[i].flag = false;
-    }
-    
-    scanf("%d%d",&n,&head);
-    for(int i=0;i<n;i++){
-        scanf("%d %d %d",&addr,&key,&next_addr);
-        nodes[addr].addr = addr; //不要忘了
-        nodes[addr].key = key;
-        nodes[addr].next = next_addr;
-    }
-    //对链表进行标记,flag
-    for(int p=head;p!=-1;p=nodes[p].next){
-        nodes[p].flag = true;
-        cnt++;
-    }
-    
-    if(cnt == 0){ //考虑链表中没有结点的情况
-        printf("0 -1");
-    }else{
-        sort(nodes,nodes+MAXN,cmp); //排序
-    	printf("%d %05d\n",cnt,nodes[0].addr);
-    	for(int i=0;i<cnt;i++){
-    	    if(i!=cnt-1){
-    	        printf("%05d %d %05d\n",nodes[i].addr,nodes[i].key,nodes[i+1].addr);
-    	    }else{
-    	        printf("%05d %d -1\n",nodes[i].addr,nodes[i].key); //最后一个结点的输出
-    	    }
-    	}
-    }
-    
-    return 0;
-}
-```
-
-错误分析：
-
-1. 51行中：第三个数字不能输出nodes[i].next，因为排序后next域已经无效了，真正的next是nodes[i+1].addr。
-
-# A1053 Path of Equal Weight
-
-```cpp
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 105;
-
-//静态树表示法
-struct Node{
-    int weight; //权重(数据域)
-    vector<int> child; //孩子结点的编号
-}nodes[MAXN];
-
-int n,m,s; //结点数量，非叶子结点数量
-int id,k,child; //父亲，孩子数量，孩子结点
-int Path[MAXN]; //记录路径
-
-void DFS(int index,int layer,int sum){ //index表示正在访问的结点的编号，layer是层数，sum是目前权值总和
-    if(sum == s){ //权值总和等于给定值
-        if(nodes[index].child.empty()){ //如果为叶子结点
-            //输出路径
-            printf("%d",Path[0]);
-            for(int i=1;i<=layer;i++){
-                printf(" %d",Path[i]);
-            }
-            printf("\n");
-            return;
-        }
-    }
-    if(sum > s){ //如果大于s
-        return;
-    }
-    //如果小于或等于s
-    for(int i=0;i<nodes[index].child.size();i++){
-        int v = nodes[index].child.at(i); //儿子结点编号
-        Path[layer+1] = nodes[v].weight; //保存路径
-        DFS(v,layer+1,sum+nodes[v].weight);
-    }
-}
-
-bool cmp(int a, int b){
-    return nodes[a].weight > nodes[b].weight; //非升序排列
-}
-
-int main(){
-    scanf("%d%d%d",&n,&m,&s);
-    for(int i=0;i<n;i++){ //输入权重
-        scanf("%d",&nodes[i].weight);
-    }
-    for(int i=0;i<m;i++){
-    	scanf("%d%d",&id,&k);
-    	for(int j=0;j<k;j++){
-            scanf("%d",&child);
-            nodes[id].child.push_back(child);
-        }
-        sort(nodes[id].child.begin(),nodes[id].child.end(),cmp); //排序，保证路径输出是非升的。
-    }
-    
-    Path[0] = nodes[0].weight;
-    DFS(0,0,nodes[0].weight);
-}
-```
-
-错误分析：
-
-1. 忘了写排序函数了。55行
-
-# A1056 Mice and Rice
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-using namespace std;
-
-struct Node{
-    int id, w, lunNum; //lunNum是在第几轮被淘汰
-    int rankNum;
-};
-const int MAXNP = 1005;
-Node players[MAXNP];
-int players2[MAXNP];
-int np, ng;
-vector<int> lun; //表示一轮的比赛人员
-int lunNum = 0;
-
-int findMax(int a, int b){ //返回最胖老鼠在lun中的下标
-    int maxm = -1, m;
-    for(int i=a; i<=b; i++){
-        int index = lun[i];
-        if(players[index].w > maxm){
-            maxm = players[index].w;
-            m = i;
-        }
-    }
-    return m;
-}
-bool Comp(int a, int b){
-    if(players[a].lunNum != players[b].lunNum){
-        return players[a].lunNum > players[b].lunNum;
-    }else{
-        return players[a].id < players[b].id;
-    }
-}
-int main(){
-    //初始化
-    for(int i=0; i<MAXNP; i++){
-        players2[i] = i;
-    }
-
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d %d",&np,&ng);
-    for(int i=0; i<np; i++){
-        players[i].id = 0;
-        scanf("%d",&players[i].w);
-    }
-    for(int i=0; i<np; i++){
-        int a;
-        scanf("%d",&a);
-        lun.push_back(a);
-    }
-
-    lunNum = 0;
-    while(lun.size() > 1){
-        vector<int> tempLun; //暂存下一轮的人员
-        int i = 0, j;
-        while(i < lun.size()){
-            j = i+ng-1 < lun.size() ? i+ng-1 : lun.size()-1;
-            int m = findMax(i, j);
-            tempLun.push_back(lun[m]);
-            for(int k=i; k<=j; k++){
-                int index = lun[k];
-                players[index].lunNum = lunNum;
-            }
-            i = j + 1;
-        }
-        lun = tempLun;
-        lunNum++;
-    }
-    players[lun.front()].lunNum = lunNum;
-
-    sort(players2, players2+np, Comp);
-
-    for(int i=0; i<np; i++){
-        int index = players2[i];
-        if(i == 0){
-            players[index].rankNum = 1;
-        }else{
-            int lastIndex = players2[i-1];
-            if(players[index].lunNum == players[lastIndex].lunNum){
-                players[index].rankNum = players[lastIndex].rankNum;
-            }else{
-                players[index].rankNum = i+1;
-            }
-        }
-    }
-    for(int i=0; i<np; i++){
-        if(i == 0){
-            printf("%d",players[i].rankNum);
-        }else{
-            printf(" %d",players[i].rankNum);
-        }
-    }
-}
-
-```
-
-# A1058 A+B in Hogward
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<string>
-#include<vector>
-using namespace std;
-
-char time1[15], time2[15];
-
-void getBit(char s[],int& a,int& b,int& c){
-    int num = 0;
-    int i = 0;
-    int d = 0;
-    while(s[i] != '\0'){
-        if(s[i] == '.'){
-            if(num == 0){
-                a = d;
-            }else if(num == 1){
-                b = d;
-            }
-            num++;
-            d = 0;
-        }else{
-            d = d*10 + s[i]-48;
-        }
-        i++;
-    }
-    c = d;
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    /*scanf("%s %s",&time1,&time2);
-    int a1,b1,c1,a2,b2,c2;
-    getBit(time1,a1,b1,c1);
-    getBit(time2,a2,b2,c2);*/
-    int a1,b1,c1,a2,b2,c2;
-    scanf("%d.%d.%d %d.%d.%d",&a1,&b1,&c1,&a2,&b2,&c2);
-
-    int a,b,c;
-    int d = 0;
-    if(c1 + c2 >= 29){
-        c = c1 + c2 - 29;
-        d = 1;
-    }else{
-        c = c1 + c2;
-    }
-    if(b1 + b2 + d >= 17){
-        b = b1 + b2 + d - 17;
-        d = 1;
-    }else{
-        b = b1 + b2 + d;
-        d = 0;
-    }
-    /*if(a1 + a2 + d > 1e7+1){
-        a = a1 + a2 + d - (1e7+1);
-        d = 1;
-    }else{
-        a = a1 + a2 + d;
-        d = 0;
-    }*/
-    a = a1 + a2 + d;
-    printf("%d.%d.%d",a,b,c);
-}
-
-```
-
-# A1059 Prime Factors
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<cmath>
-using namespace std;
-
-int n;
-struct Node{
-    int prime;
-    int cnt;
-};
-Node nodes[100];
-int num = 0;
-
-bool isPrime(int x){
-    if(x <= 1){
-        return false;
-    }
-    int sqrtx = sqrt(x);
-    for(int i=2; i<=sqrtx; i++){
-        if(x%i == 0)
-            return false;
-    }
-    return true;
-}
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    printf("%d=",n);
-    if(n != 1){
-        int sqrtn = sqrt(n);
-        for(int i=2; i<=sqrtn; i++){
-            if(isPrime(i) == true){
-                if(n%i == 0){
-                    int temp = num++;
-                    nodes[temp].prime = i;
-                    nodes[temp].cnt = 0;
-                    while(n%i == 0){
-                        nodes[temp].cnt++;
-                        n = n/i;
-                    }
-                }
-            }
-            if(n == 1){
-                break;
-            }
-        }
-        if(n != 1){
-            nodes[num].prime = n;
-            nodes[num].cnt = 1;
-            num++;
-        }
-        for(int i=0; i<num; i++){
-            if(i != 0){
-                printf("*");
-            }
-            printf("%d",nodes[i].prime);
-            if(nodes[i].cnt > 1){
-                printf("^%d",nodes[i].cnt);
-            }
-        }
-    }else{
-        printf("1");
-    }
-}
-```
-
-# A1060 Are They Equal
-
-```cpp
-/*
-基本思路：先判断数字等于0.0还是大于0.0还是小于0.0。若大于0.0，则先去掉前导0（考虑到02.02这种
-情况），再记录小数点前面有多少数字，则为指数，同时把数字一个一个输出直到达到significant digit的
-数量；若小于0.0，则找到小数点后面的位置，记录小数点后面第一个非0数前面有多少个0，则为-exp，然后把后面
-的数字一个一个输出，直到达到significant digit的数量
-*/
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<string>
-#include<vector>
-using namespace std;
-
-int n;
-char str1[200], str2[200];
-
-void convert(char str[], vector<int>& vec, int& exp){
-    double d;
-    sscanf(str,"%lf",&d);
-    if(d == 0.0){
-        for(int i=0; i<n; i++)
-            vec.push_back(0);
-        exp = 0;
-        return;
-    }else if(d >= 1.0){
-        int i = 0;
-        while(str[i] == '0') //把前导0去掉
-            i++;
-            
-        int cnt = 0; //记录已经输入了多少significant digit
-        while(str[i] != '.' && str[i] != '\0'){
-            if(cnt < n){
-                vec.push_back(str[i]-48);
-                cnt++;
-            }
-            exp++;
-            i++;
-        }
-        if(str[i] == '.'){
-            i++;
-            while(cnt < n && str[i] != '\0'){
-                vec.push_back(str[i]-48);
-                i++; cnt++;
-            }
-        }
-        while(cnt < n){
-            vec.push_back(0);
-            cnt++;
-        }
-    }else{
-        //int i = 2; //小数部分从2-th开始
-        int i = 0;
-        while(str[i] != '.')
-            i++;
-        i++;
-        exp = 0; //小数点后第一个非0数前，0的个数就是-exp
-        while(str[i] == '0'){
-            exp--;
-            i++;
-        }
-        int cnt = 0;
-        while(cnt < n && str[i] != '\0'){
-            vec.push_back(str[i]-48);
-            cnt++;
-            i++;
-        }
-        while(cnt < n){
-            vec.push_back(0);
-            cnt++;
-        }
-    }
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d %s %s",&n,&str1,&str2);
-
-    vector<int> vec1, vec2;
-    int exp1, exp2;
-    convert(str1, vec1, exp1);
-    convert(str2, vec2, exp2);
-
-    if(exp1 == exp2 && vec1 == vec2){
-        printf("YES 0.");
-        for(int i=0; i<n; i++){
-            printf("%d",vec1[i]);
-        }
-        printf("*10^%d",exp1);
-    }else{
-        printf("NO 0.");
-        for(int i=0; i<n; i++){
-            printf("%d",vec1[i]);
-        }
-        printf("*10^%d 0.",exp1);
-        for(int i=0; i<n; i++){
-            printf("%d",vec2[i]);
-        }
-        printf("*10^%d",exp2);
-    }
-}
-```
-
-错误分析：
-
-1. 情况考虑不全：没有考虑00.02或02.02这种情况
-
-# A1062 Talent and Virtue
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<set>
-#include<algorithm>
-#include<string>
-using namespace std;
-
-struct Node{
-    char id[10];
-    int virtue, talent;
-    int flag; //0是sage，1是nobleman, 2是foolman, 3是small man, 4表示不考虑
-};
-const int MAXN = 1e5+5;
-int n,l,h;
-Node persons[MAXN];
-int persons2[MAXN];
-int res;
-
-bool Comp(int a, int b){
-    if(persons[a].flag != persons[b].flag){ //
-        return persons[a].flag < persons[b].flag;
-    }else if(persons[a].talent + persons[a].virtue != persons[b].talent + persons[b].virtue){
-        return (persons[a].talent + persons[a].virtue) > (persons[b].talent + persons[b].virtue);
-    }else if(persons[a].virtue != persons[b].virtue){
-        return persons[a].virtue > persons[b].virtue;
-    }else{
-        return string(persons[a].id) < string(persons[b].id);
-    }
-}
-int main(){
-    //初始化
-    for(int i=0; i<MAXN; i++){
-        persons2[i] = i;
-    }
-
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d %d %d",&n,&l,&h);
-    res = n;
-    for(int i=0; i<n; i++){
-        scanf("%s %d %d",&persons[i].id,&persons[i].virtue,&persons[i].talent);
-        if(persons[i].virtue >= h && persons[i].talent >= h){
-            persons[i].flag = 0;
-        }else if(persons[i].virtue >= h && persons[i].talent >= l && persons[i].talent < h){
-            persons[i].flag = 1;
-        }else if(persons[i].virtue >= l && persons[i].virtue < h && persons[i].talent >= l && persons[i].talent < h && persons[i].virtue >= persons[i].talent){
-            persons[i].flag = 2;
-        }else if(persons[i].virtue < l || persons[i].talent < l){
-            persons[i].flag = 4;
-            res--;
-        }else{
-            persons[i].flag = 3;
-        }
-    }
-    sort(persons2, persons2+n, Comp);
-
-    printf("%d\n",res);
-    for(int i=0; i<n; i++){
-        int index = persons2[i];
-        if(persons[index].flag < 4){
-            printf("%s %d %d\n",persons[index].id,persons[index].virtue,persons[index].talent);
-        }else{
-            break;
-        }
-    }
-}
-```
-
-错误分析：
-
-1. 没有搞清楚排序逻辑
-
-# A1063 Set Similarity
-
-```cpp
-/*
-基本思想：将两个set合并为1个set，算总元素数（时间复杂度高）；用双指针法算两个set的共同distinct元素
-数。
-基本思想2：算总元素数也可以用双指针法
-*/
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<set>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 51;
-int n, k; //1-n
-set<int> sets[MAXN];
-
-double getRate(int a, int b){
-    int Nc = 0, Nt = 0;
-    /*set<int> temp;
-    temp.insert(sets[a].begin(), sets[a].end());
-    temp.insert(sets[b].begin(), sets[b].end());
-    Nt = temp.size();*/
-
-    set<int>::iterator ita = sets[a].begin(), itb = sets[b].begin();
-    while(ita != sets[a].end() && itb != sets[b].end()){
-        Nt++;
-        if((*ita) == (*itb)){
-            Nc++;
-            ita++; itb++;
-        }else if((*ita) < (*itb)){
-            ita++;
-        }else if((*ita) > (*itb)){
-            itb++;
-        }
-    }
-    if(ita != sets[a].end()){
-        while(ita != sets[a].end()){
-            Nt++;
-            ita++;
-        }
-    }else if(itb != sets[b].end()){
-        while(itb != sets[b].end()){
-            Nt++;
-            itb++;
-        }
-    }
-    return Nc/(1.0*Nt);
-}
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    int m, x;
-    for(int i=1; i<=n; i++){
-        scanf("%d",&m);
-        for(int j=0; j<m; j++){
-            scanf("%d",&x);
-            sets[i].insert(x);
-        }
-    }
-    scanf("%d",&k);
-    int a, b;
-    for(int i=0; i<k; i++){
-        scanf("%d %d",&a,&b);
-        double rate = getRate(a, b);
-        rate *= 100;
-        printf("%.1f%%\n",rate);
-    }
-}
-```
-
-错误分析：
-
-1. 超时：17-20行很高复杂度
-
-# A1064 Binary Search Tree
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-/*
-基本思路：考BST和完全二叉树，分治法：先将输入序列排序，再按照完全二叉树的性质来找到这段序列的根是什么，
-然后对根左边的序列执行上述过程，根右边的序列执行上述过程。
-如何找根：对于输入0 1 2 3 4 5 6 7 8 9。有7（8-1，且16-1>10）个元素是在树的前7号结点，且组成满
-二叉树，然后将剩下的3个元素从左到右放到满二叉树的下一层。则有(4-1)+3个元素在最终完全BST的左边，有
-(4-1)+0个元素在右边，所以根元素是输入序列的第(4-1)+3+1个元素
-*/
-#include<cstdio>
-#include<queue>
-#include<algorithm>
-using namespace std;
-
-struct Node{
-    int data;
-    Node *lchild, *rchild;
-    Node(int _data){data = _data; lchild = rchild = NULL;}
-};
-const int MAXN = 1005;
-int n;
-int num[MAXN];
-
-int findRoot(int left, int right){
-    int len = right - left + 1;
-    int a = 1, b, c = 2; //10 = 2^a -1 + b, c = 2^a则a = 3, b = 3, c = 8
-    while(2*c - 1 <= len){
-        a++;
-        c = c*2;
-    }
-    b = len - (c-1);
-
-    if(b <= c/2){ 
-        return left + c/2 - 1 + b;
-    }else{
-        return left + c - 1;
-    }
-}
-void CreateBST(int left, int right, Node* &root){
-    if(left == right){
-        Node* node = new Node(num[left]);
-        root = node;
-        return;
-    }else if(left > right){ //
-        root = NULL;
-        return;
-    }
-    int index = findRoot(left, right);
-    Node* node = new Node(num[index]);
-    root = node;
-    CreateBST(left, index-1, root->lchild);
-    CreateBST(index+1, right, root->rchild);
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    for(int i=0; i<n; i++){
-        scanf("%d",&num[i]);
-    }
-    sort(num, num+n);
-
-    Node* root = NULL;
-    CreateBST(0, n-1, root);
-
-    //level order
-    queue<Node*> q;
-    q.push(root);
-    while(!q.empty()){
-        Node* node = q.front(); q.pop();
-        if(node == root){
-            printf("%d",node->data);
-        }else{
-            printf(" %d",node->data);
-        }
-        if(node->lchild)
-            q.push(node->lchild);
-        if(node->rchild)
-            q.push(node->rchild);
-    }
-}
-```
-
-# A1065 A+B and C
-
-```cpp
-/*
-基本思想：不能通过输入double来直接比较大小，因为double对大整数的表示有误差，所以只能通过输入long long
-的方式来比较：判断a+b是否大于c。这里需要注意的是a+b可能溢出，如果a大于0且b大于0，
-但相加得到的却是小于等于0的说明是正溢出，这时肯定比c大（因为c肯定在long long的范围内）。
-如果a小于0且b小于0，但相加得到的却是大于等于0的说明是负溢出，这是肯定比c小。
-其他情况就和平常计算一样。这里还要注意a+b要赋值给一个变量再和c比较。
-*/
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-using namespace std;
-
-int n;
-long long a, b, c;
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    for(int i=0; i<n; i++){
-        scanf("%lld %lld %lld",&a,&b,&c);
-        long long temp = a + b;
-        if(a > 0 && b > 0 && temp <= 0){
-            printf("Case #%d: true\n",i+1);
-        }else if(a < 0 && b < 0 && temp >= 0){
-            printf("Case #%d: false\n",i+1);
-        }else if(temp > c){
-            printf("Case #%d: true\n",i+1);
-        }else if(temp <= c){
-            printf("Case #%d: false\n",i+1);
-        }
-    }
-}
-```
-
-# A1066 Root of AVL Tree
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<algorithm>
-#include<cmath>
-using namespace std;
-
-struct Node{
-    int height;
-    int data;
-    Node *left, *right;
-    Node(int _data){data = _data; height = 1; left = right = NULL;}
-    int getBalanceFact(){
-        int leftHeight = left ? left->height : 0;
-        int rightHeight = right ? right->height : 0;
-        return leftHeight - rightHeight;
-    }
-    void updateHeight(){
-        int leftHeight = left ? left->height : 0;
-        int rightHeight = right ? right->height : 0;
-        height = max(leftHeight, rightHeight)+1;
-    }
-};
-
-int n;
-Node* root = NULL;
-
-void R(Node* &root){
-    if(root->left->right){
-        Node* temp = root->left;
-        root->left = temp->right;
-        temp->right = root;
-        root = temp;
-    }else{
-        Node* temp = root->left;
-        temp->right = root;
-        root->left = NULL;
-        root = temp;
-    }
-    //root->left->updateHeight();
-    root->right->updateHeight();
-    root->updateHeight();
-}
-void L(Node* &root){
-    if(root->right->left){
-        Node* temp = root->right;
-        root->right = temp->left;
-        temp->left = root;
-        root = temp;
-    }else{
-        Node* temp = root->right;
-        temp->left = root;
-        root->right = NULL;
-        root = temp;
-    }
-    //root->right->updateHeight();
-    root->left->updateHeight();
-    root->updateHeight();
-}
-void Insert(int x, Node* &root){
-    if(root == NULL){
-        Node* node = new Node(x);
-        root = node;
-        return;
-    }
-    if(x < root->data){
-        Insert(x, root->left);
-    }else{
-        Insert(x, root->right);
-    }
-    root->updateHeight();
-    int balanceFact = root->getBalanceFact();
-    if(balanceFact > 1 && root->left->getBalanceFact() > 0){ //LL
-        R(root);
-    }else if(balanceFact > 1 && root->left->getBalanceFact() < 0){ //LR
-        L(root->left);
-        R(root);
-    }else if(balanceFact < -1 && root->right->getBalanceFact() < 0){ //RR
-        L(root);
-    }else if(balanceFact < -1 && root->right->getBalanceFact() > 0){ //RL
-        R(root->right);
-        L(root);
-    }
-}
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    int x;
-    for(int i=0; i<n; i++){
-        scanf("%d",&x);
-        Insert(x, root);
-    }
-    printf("%d",root->data);
-}
-
-```
-
-# *A1067 Sort With Swap(0,1)
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-/*
-基本思想：
-（1）. 若0在0-th位置，则若剩下的数字都排序好，则不用交换，
-若剩下的位置未排序好，则和任意一个不在其位置的而数字交换，cnt++；
-（2）. 接下来考虑0不在0-th的情况该怎么办，若zeroPos与num[0]不同，例如:
-0 1 2 3 4
-1 3 4 0 2
-则直接将zeroPos与0交换，直到zeroPos与num[0]相同，例如：
-0 1 2 3 4
-1 0 4 3 2
-（3）. 则看除了0与zeroPos外是否是否有数字不在其位置，若有，
-则0与其交换，并回到2，否则，则交换一次就结束了
-*/
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 1e5+5;
-int n;
-int num[MAXN];
-int zeroPos; //数字0所在的位置
-int cnt = 0;
-
-int swap2(int a){ //0和a交换
-    for(int i=0; i<n; i++){
-        if(num[i] == a){
-            num[i] = 0;
-            num[zeroPos] = a;
-            return i;
-        }
-    }
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    for(int i=0; i<n; i++){
-        scanf("%d",&num[i]);
-        if(num[i] == 0)
-            zeroPos = i;
-    }
-    if(zeroPos == 0){
-        int i = 1;
-        while(i < n && num[i] == i)
-            i++;
-        if(i < n){
-            int temp = num[i];
-            num[i] = 0;
-            num[0] = temp;
-            cnt++;
-            zeroPos = i;
-        }
-    }
-    if(zeroPos != 0){
-        while(true){
-            while(num[0] != zeroPos){
-                zeroPos = swap2(zeroPos);
-                cnt++;
-            }
-            int i = 0;
-            while(i < n){
-                if(i!=0 && i != zeroPos && num[i]!=i)
-                    break;
-                i++;
-            }
-            if(i < n){
-                int temp = num[i];
-                num[i] = num[zeroPos];
-                num[zeroPos] = temp;
-                zeroPos = i;
-                cnt++;
-            }else{
-                cnt++;
-                break;
-            }
-        }
-    }else{
-        cnt = 0;
-    }
-
-    printf("%d",cnt);
-}
-```
-
-错误分析：
-
-1. 超时：将两个数交换，需要遍历整个数组，来找到两个数的位置，总的时间复杂度O(n*n)
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-/*
-基本思想：
-（1）. 若0在0-th位置，则若剩下的数字都排序好，则不用交换，
-若剩下的位置未排序好，则和任意一个不在其位置的而数字交换，cnt++；
-（2）. 接下来考虑0不在0-th的情况该怎么办，若zeroPos与num[0]不同，例如:
-0 1 2 3 4
-1 3 4 0 2
-则直接将zeroPos与0交换，直到zeroPos与num[0]相同，例如：
-0 1 2 3 4
-1 0 4 3 2
-（3）. 则看除了0与zeroPos外是否是否有数字不在其位置，若有，
-则0与其交换，并回到2，否则，则交换一次就结束了
-*/
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 1e5+5;
-int n;
-int num[MAXN];
-int num2[MAXN];
-int zeroPos; //数字0所在的位置
-int cnt = 0;
-
-void swap2(int index){
-    int temp = num[index];
-    num[index] = num[zeroPos];
-    num[zeroPos] = temp;
-}
-void swap3(int index1, int index2){
-    int temp = num2[index1];
-    num2[index1] = num2[index2];
-    num2[index2] = temp;
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d",&n);
-    for(int i=0; i<n; i++){
-        scanf("%d",&num[i]);
-        num2[num[i]] = i;
-        if(num[i] == 0)
-            zeroPos = i;
-    }
-    if(zeroPos == 0){
-        int i = 1;
-        while(i < n && num[i] == i)
-            i++;
-        if(i < n){
-            swap2(i);
-            swap3(num[zeroPos], num[i]);
-            cnt++;
-            zeroPos = i;
-        }
-    }
-    if(zeroPos != 0){
-        while(true){
-            while(num[0] != zeroPos){
-                int index = num2[zeroPos];
-                swap2(index);
-                swap3(num[zeroPos],num[index]);
-                cnt++;
-                zeroPos = index;
-            }
-            int i = 0;
-            while(i < n){
-                if(i!=0 && i != zeroPos && num[i]!=i)
-                    break;
-                i++;
-            }
-            if(i < n){
-                swap2(i);
-                swap3(num[zeroPos],num[i]);
-                zeroPos = i;
-                cnt++;
-            }else{
-                cnt++;
-                break;
-            }
-        }
-    }else{
-        cnt = 0;
-    }
-
-    printf("%d",cnt);
-}
-
-```
-
-修改的，还是超时
-
-# A1068 Find More Coins
-
-```cpp
-/*
-这题就是0/1背包问题
-*/
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-#include<cmath>
-using namespace std;
-
-const int MAXN = 10005; //有多少种硬币
-const int MAXM = 105; //要付的钱
-
-int n,m;
-int dp[MAXN][MAXM] = {0}; //dp[i][j]表示考虑前i个物品,背包剩余容量为j, 则最大效益为
-int value[MAXN];
-
-bool Comp(int a,int b){
-    return a > b;
-}
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-
-    scanf("%d %d\n",&n,&m);
-    for(int i=1; i<=n; i++){
-        scanf("%d",&value[i]);
-    }
-    sort(value+1,value+n+1,Comp);
-
-    //初始化
-    for(int j=value[1]; j<=m; j++){
-        dp[1][j] = value[1];
-    }
-    //动态规划
-    for(int i=2; i<=n; i++){
-        for(int j=value[i]; j<=m; j++){
-            dp[i][j] = max(dp[i-1][j], dp[i-1][j-value[i]] + value[i]);
-        }
-    }
-
-    //找出路径
-    int num = dp[n][m], i = n, j = m;
-    vector<int> path; //保存硬币的下标
-    if(num != m){
-        printf("No Solution\n");
-    }else{
-        while(i >= 2 && num != 0){
-            if(num >= value[i] && dp[i-1][num-value[i]] + value[i] == num){ //第i个硬币是可以考虑的
-                path.push_back(i);
-                num = num - value[i];
-            }
-            i--;
-        }
-        if(num != 0)
-            path.push_back(i);
-
-        vector<int>::iterator it;
-        for(it = path.begin(); it != path.end(); it++){
-            if(it == path.begin()){
-                printf("%d",(value[*it]));
-            }else{
-                printf(" %d",(value[*it]));
-            }
-        }
-    }
-}
-
-```
-
-# A1073 Scientific Notation
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-using namespace std;
-
-const int MAXN = 10005;
-char sci[MAXN];
-char result[MAXN];
-
-void erase_n(){
-    int i = 0;
-    while(sci[i] != '\n' && sci[i] != '\0')
-        i++;
-    sci[i] = '\0';
-}
-
-int getExp(){ //得到指数
-    int i = 0;
-    while(sci[i] != 'E')
-        i++;
-    i++;
-
-    char exp[10];
-    int j = 0, res;
-    while(sci[i] != '\0'){
-        exp[j] = sci[i];
-        j++; i++;
-    }
-    sscanf(exp,"%d",&res);
-    return res;
-}
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-    fgets(sci,MAXN,stdin);
-
-    int exp = getExp(), i=0, j=0; //i是sci的指针，j是result的指针
-    //处理正负号
-    if(sci[0] == '+'){
-        result[0] = '\0';
-        i++;
-    }else if(sci[0] == '-'){
-        result[j] = '-';
-        j++;
-        i++;
-    }else{
-        result[0] = '\0';
-    }
-    //处理指数问题
-    if(exp < 0){
-        //如果指数小于0，则先压入exp个0，压入第一个0后压入.
-        for(int k=0; k<-exp; k++){
-            result[j] = '0';
-            if(k == 0){
-                result[++j] = '.';
-                ++j;
-            }else{
-                ++j;
-            }
-        }
-        //压入其他数字部分，例如对于+1.23400E-03就压入123400
-        while(sci[i] != 'E'){
-            if(sci[i] != '.'){
-                result[j] = sci[i];
-                j++;
-            }
-            i++;
-        }
-    }else if(exp > 0){
-        //如果指数大于0
-        int a = 0; //记录小数点后输出了几位数字，对于-1.2E+10, 小数点后输出了1位数字，则再输出10-1=9个0
-        bool flag = false; //记录是否在输出小数点后的数
-        while(sci[i] != 'E'){
-            if(sci[i] != '.'){
-                result[j] = sci[i];
-                j++;
-                if(flag)
-                    ++a;
-            }else{
-                flag = true;
-            }
-            if(a == exp && sci[i+1] != 'E'){ //判断输出.的逻辑
-                result[j++] = '.';
-            }
-            i++;
-        }
-        for(int k=0; k<exp-a; k++){
-            result[j++] = '0';
-        }
-    }
-    result[j] = '\0';
-
-    //输出
-    printf("%s\n",result);
-}
-
-```
-
-错误分析
-细节错误：23行，是sci[i] != '\0'  而不是 i != '\0'; 51行，k<-exp 而不是 k<exp
-
-# A1076 Forwards on Weibo
-
-```cpp
-#include<cstdio>
-#include<vector>
-#include<queue>
-#include<cstring>
-using namespace std;
-
-struct Node {
-	int id;
-	int layer;
-};
-
-const int MAXV = 1005;
-int n, l; //用户数，最大层数
-vector<Node> Adj[MAXV]; //如何初始化
-bool inq[MAXV] = { false };
-
-int BFS(int s, int maxL) {
-	/*若s发送一个消息，不超过maxL层的用户有多少个*/
-	int numForwards = 0; //最大潜在转发量，只考虑maxL层的
-	Node start; //初始结点
-	Node v; //后续结点
-	start.id = s;
-	start.layer = 0;
-
-	queue<Node> q;
-	q.push(start); //将初始结点压入队列
-	inq[start.id] = true;
-	while (!q.empty()) {
-		start = q.front(); //出队列
-		q.pop();
-		for (int i = 0; i < Adj[start.id].size(); i++) { //考虑start结点的下一层所有结点
-			v = Adj[start.id].at(i);
-			v.layer = start.layer + 1;
-			if (inq[v.id] == false && v.layer <= maxL) { //如果v未被访问，且层数未超过maxL     
-				q.push(v);
-				inq[v.id] = true;
-                numForwards++; //更新最大潜在转发量
-			}
+	cin>>n>>b;
+	vector<int> num;
+	while(n!=0){
+		num.push_back(n%b);
+		n=n/b;
+	}
+	int siz=num.size();
+	for(int i=0;i<=siz/2;i++){
+		if(num[i]!=num[siz-i-1]){
+			cout<<"No"<<endl;
+			goto output;
 		}
 	}
-	return numForwards;
-}
-
-int main() {
-	scanf("%d%d", &n, &l);
-	Node user; //i号用户
-	int num; //i号用户的关注数量
-	int follow; //关注的用户的编号
-	for (int i = 1; i <= n; i++) {
-		user.id = i;
-		scanf("%d", &num);
-		for (int j = 0; j < num; j++) {
-			scanf("%d", &follow);
-            Adj[follow].push_back(user);
+	cout<<"Yes"<<endl;
+	output:;
+	for(int j=siz-1;j>=0;j--){
+		if(j==siz-1){
+			cout<<num[j];
+		}else{
+			cout<<" "<<num[j];
 		}
 	}
-	int numQuery, s, numForwards; //要问的用户数，用户编号
-	scanf("%d", &numQuery);
-	for (int i = 0; i < numQuery; i++) {
-        memset(inq,false,sizeof(inq)); //inq数组初始化
-		scanf("%d", &s);
-		numForwards = BFS(s, l);
-		printf("%d\n", numForwards);
-	}
-}
-```
-
-错误分析：
-
-1. 59行，由于inq是隶属于BFS函数的全局变量，所以每次运行BFS之前都要初始化inq。
-
-# A1080 Graduate Admission
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<vector>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 40005;
-const int MAXM = 105;
-const int MAXK = 5;
-
-struct School{
-    int quota;
-    vector<int> studs; //保存接受的学生的编号
-};
-struct Student{
-    int ge, gi;
-    vector<int> schls; //志愿
-};
-int n,m,k;
-School schools[MAXM];
-Student students[MAXN];
-int students2[MAXN]; //初始为{0,1,2...,n-1}
-
-bool Comp(int a, int b){
-    int aFinal = students[a].ge + students[a].gi;
-    int bFinal = students[b].ge + students[b].gi;
-    if(aFinal == bFinal){
-        //return students[a].gi < students[b].gi;
-        return students[a].ge > students[b].ge;
-    }
-    return aFinal > bFinal;
-}
-
-int main(){
-    //初始化
-    for(int i=0; i<MAXN; i++){
-        students2[i] = i;
-    }
-
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d %d %d\n",&n,&m,&k);
-    for(int i=0; i<m; i++){
-        scanf("%d",&schools[i].quota);
-    }
-    for(int i=0; i<n; i++){
-        scanf("%d %d",&students[i].ge,&students[i].gi);
-        int a;
-        for(int j=0; j<k; j++){
-            scanf("%d",&a);
-            students[i].schls.push_back(a);
-        }
-    }
-    sort(students2,students2+n,Comp);
-
-    for(int i=0; i<n; i++){
-        int index = students2[i];
-        for(int j=0; j<k; j++){
-            int schlIndex = students[index].schls[j];
-            if(schools[schlIndex].quota != 0){
-                schools[schlIndex].studs.push_back(index);
-                schools[schlIndex].quota--;
-                break; //这个学生已经被录取
-            }else{
-                int index2 = schools[schlIndex].studs.back();
-                if(students[index].ge == students[index2].ge && students[index].gi == students[index2].gi){ //两人排名一样
-                    schools[schlIndex].studs.push_back(index);
-                    break;
-                }
-            }
-        }
-    }
-
-    //输出
-    for(int i=0; i<m; i++){
-        sort(schools[i].studs.begin(),schools[i].studs.end());
-        for(int j=0; j<schools[i].studs.size();j++){
-            if(j == 0){
-                printf("%d",schools[i].studs[j]);
-            }else{
-                printf(" %d",schools[i].studs[j]);
-            }
-        }
-        printf("\n");
-    }
-}
-
-```
-
-# A1082 Read Number in Chinese
-
-```cpp
-#include<cstdio>
-#include<cstring>
-#include<queue>
-#include<string>
-#include<iostream>
-using namespace std;
-
-char s[15];
-queue<string> q; //把要输出的字符串（负，万，二之类的）入队
-string bit[10] = { string(""),string("Shi"),string("Bai"),string("Qian"),string("Wan"),string(""),string(""),string(""),string("Yi") };
-string bit2[10] = { string("ling"),string("yi"),string("er"),string("san"),string("si"),string("wu"),string("liu"),string("qi"),string("ba"),string("jiu") };
-
-int main() {
-	//scanf("%s", &s);
-	cin >> s;
-
-	int begin, end; //s中数字的开始下标，末尾下标
-	end = strlen(s) - 1;
-	if (s[0] < 48 || s[0]>57) { //是负数
-		q.push(string("Fu"));
-		begin = 1;
-	}
-	else {
-		begin = 0;
-	}
-
-	//int cur1 = begin, cur2 = (end - cur1 + 1) % 4 + cur1 - 1; //考虑的一个区间，如123456789中1算一个区间，2345算一个区间
-	int cur1 = begin, cur2 = (end-cur1+1)/4!=0 ? ((end-cur1+1)%4 != 0 ? (end - cur1 + 1) % 4 + cur1 - 1 : cur1+4-1) : end; //考虑的一个区间，如1 2345 6789中1算一个区间，2345算一个区间; 2000 0000中2000算一个区间
-    bool zero = false; //在遇到这种情况：1 0000 0100。第二个区间（处理完时，不做什么），标识zero=true，意思是要考虑到前面0000的情况
-	while (true) { //循环，处理完所有区间后推出循环,每个循环都处理一个区间
-		int i = cur1; 
-		while (i <= cur2) { //处理这个区间内应该输出什么。比如1022 0001 的第一个区间输出"yi Qian ling er Shi er"
-			if (s[i] == 48) { //如果数字为0
-				while (s[i] == 48 && i != cur2) {//s[i]为0并且未到达区间的末尾
-					i++;
-				}
-				if (s[i] != 48 && i != cur2) { //s[i]不为0且s[i]不在末尾
-                    if(!zero){
-						q.push("ling");
-                    }else{
-                        q.push("ling");
-						zero = false;
-                    }
-					q.push(bit2[s[i] - 48]); //比如，将"five"压进去
-					q.push(bit[cur2 - i]); //比如，将"Bai"压进去
-				}
-				else if (s[i] == 48 && i == cur2) { //s[i]为0且在区间末尾。有4种情况：0000,1000,1010,0,只有第一种情况，考虑下一个区间第一次入队时，不管什么情况，先入个"ling"，且这个"ling"覆盖下一区间可能入的"ling"
-					if (cur2 - cur1 == 3 && s[cur1] - 48 == 0 && s[cur1 + 1] - 48 == 0 && s[cur1 + 2] - 48 == 0 && s[cur1 + 3] - 48 == 0) {
-						//如果区间长度为4，且区间内数字都为0
-						zero = true;
-					}else if(cur1==cur2){
-                        q.push("ling");
-                    }
-				}
-				else { //如果s[i]不为0且在末尾
-                    if(!zero){
-                        q.push("ling");
-                    }
-                    else{
-                        q.push("ling");
-                        zero = false;
-                    }
-					q.push(bit2[s[i] - 48]);
-				}
-				i++;
-			}
-			else { //如果数字不为0
-                if(zero){
-                    q.push("ling");
-                    zero = false;
-                }
-				q.push(bit2[s[i] - 48]);
-				if (bit[cur2 - i] != string(""))//如果不是在区间的个位
-					q.push(bit[cur2 - i]);
-				i++;
-			}
-		}
-		//输出这个区间的位.如1000 0000 0800的第一个区间的位就是"Yi"，但是第二个区间不输出"Wan"
-		if (bit[end - cur2] != string("") && zero==false)//如果不是在区间的个位且区间内不是全为0
-			q.push(bit[end - cur2]);
-
-		if (cur2 == end) { //如果处理完最后一个区间
-			break;
-		}
-		else {
-			cur1 = cur2 + 1;
-			cur2 = cur1 + 4 - 1;
-		}
-	}
-
-	if (!q.empty()) {
-		cout << q.front();
-		q.pop();
-	}
-	while (!q.empty()) {
-		cout << " " << q.front();
-		q.pop();
-	}
-	return 0;
-}
-```
-
-错误分析：
-
-1. 没有考虑2000 0000的情况，第一，输出了"er Qian Wan ling"，错误的；第二，把初始区间搞错成[0,-1]，其实是[0,3]
-2. 把%和/符号写混了。
-3. 考虑输入为0的情况
-
-# A1085 Perfect Sequence
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<algorithm>
-using namespace std;
-
-const int MAXN = 1e5+5;
-int n;
-long long p;
-long long num[MAXN];
-int dp[MAXN];
-
-int main(){
-    //初始化
-    fill(dp,dp+MAXN,0);
-
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d %d",&n,&p);
-    for(int i=0; i<n; i++){
-        scanf("%d",&num[i]);
-    }
-    sort(num, num+n);
-    for(int i=0; i<n; i++){
-        if(i == 0){
-            dp[i] = 1;
-        }else{
-            int j = i-dp[i-1];
-            while(j<=i && num[i]>num[j]*p)
-                j++;
-            dp[i] = i-j+1;
-        }
-    }
-    int MAX = -1;
-    for(int i=0; i<n; i++){
-        if(dp[i] > MAX){
-            MAX = dp[i];
-        }
-    }
-    printf("%d",MAX);
-}
-
-```
-
-# A1086 Tree Traversals Again
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<queue>
-using namespace std;
-
-struct Node{
-    int data;
-    Node* left, *right;
-    Node(){left = right = NULL;}
-};
-const int MAXN = 35;
-int n;
-int input[MAXN*2]; //
-
-int num = 0;
-Node* CreateTree(){
-    if(input[num] == -1){
-        return NULL;
-    }
-    Node *node = new Node;
-    node->data = input[num];
-    num++;
-    node->left = CreateTree();
-    num++;
-    node->right = CreateTree();
-    return node;
-}
-void PostTrave(Node* root, int& a){
-    if(root == NULL)
-        return;
-    PostTrave(root->left, a);
-    PostTrave(root->right, a);
-    /*if(root == a){
-        printf("%d",root->data);
-    }else{
-        printf(" %d",root->data);
-    }*/
-    if(a == 0){
-        printf("%d",root->data);
-        a++;
-    }else{
-        printf(" %d",root->data);
-    }
-}
-int main(){
-    //初始化
-    for(int i=0; i<MAXN*2; i++)
-        input[i] = -1;
-
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%d\n",&n); //
-    char s[20];
-    for(int i=0; i<n*2; i++){
-        fgets(s, 20, stdin); //
-        if(s[1] == 'u'){
-            int data = 0;
-            int j = 5;
-            while(s[j] != '\0' && s[j] != '\n'){ //
-                data = data*10 + s[j]-48;
-                j++;
-            }
-            input[i] = data;
-        }else{
-            input[i] = -1;
-        }
-    }
-    Node* root = CreateTree();
-    /*queue<Node*> q;
-    q.push(root);
-    while(!q.empty()){
-        Node* node = q.front();
-        q.pop();
-        if(node == root){
-            printf("%d",node->data);
-        }else{
-            printf(" %d",node->data);
-        }
-        if(node->left){
-            q.push(node->left);
-        }
-        if(node->right){
-            q.push(node->right);
-        }
-    }*/
-    int a = 0;
-    PostTrave(root,a);
-}
-/*
-基本思路：创建树的输入正好比中根遍历的栈操作序列多一个pop，例如只有一个结点的树，创建树的输入是
-1 # #, 而中根遍历的栈操作序列为push(1) pop
-*/
-```
-
-错误分析：
-
-1. 细节错误：51和54行：当要输入一行时，用fgets，同时不要忘了检查fgets期望要输入的字符前面有没有换行符和空格之类的
-
-# A1087 All Roads to Rome
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<vector>
-#include<map>
-#include<set>
-#include<string>
-#include<iostream>
-#include<stack>
-using namespace std;
-
-struct Node{
-    int v, dist;
-    Node(int _v, int _dist){v = _v; dist = _dist;}
-};
-const int MAXN = 205;
-const int INF = 1e8;
-int n,k;
-string start;
-vector<Node> Adj[MAXN];
-int happiness[MAXN] = {0};
-map<string,int> str2int;
-map<int,string> int2str;
-
-int dist[MAXN];
-bool vis[MAXN];
-set<int> Pre[MAXN]; //前驱结点集合，用于寻找路径
-void Dijkstra(){ //默认从0开始
-    //初始化
-    fill(dist,dist+n,INF);
-    dist[0] = 0;
-    fill(vis,vis+n,false);
-
-    for(int i=0; i<n; i++){
-        int u = -1;
-        int minDist = INF;
-        for(int i=0; i<n; i++){
-            if(vis[i] == false && dist[i] < minDist){ //
-                minDist = dist[i];
-                u = i;
-            }
-        }
-        if(u == -1) return;
-        vis[u] = true;
-        for(int j=0; j<Adj[u].size(); j++){
-            int v = Adj[u][j].v;
-            int d = Adj[u][j].dist;
-            if(vis[v] == false){
-                if(dist[u]+d < dist[v]){
-                    dist[v] = dist[u] + d;
-                    Pre[v].clear();
-                    Pre[v].insert(u);
-                }else if(dist[u]+d == dist[v]){
-                    Pre[v].insert(u);
-                }
-            }
-        }
-    }
-}
-
-int maxHappy = -1;
-int maxAvgHappy = -1;
-int routeNum = 0;
-stack<int> temp;
-stack<int> path;
-void DFS(int s, int happy){
-    if(s == 0){
-        if(happy > maxHappy){
-            maxHappy = happy;
-            maxAvgHappy = happy/(temp.size()-1); //
-            path = temp;
-            //while(!temp.empty())temp.pop();
-        }else if(happy == maxHappy){ //
-            int avgHappy = happy/(temp.size()-1);
-            if(avgHappy > maxAvgHappy){
-                maxAvgHappy = avgHappy;
-                path = temp;
-            }
-        }
-        routeNum++;
-        return; //
-    }
-    set<int>::iterator it;
-    for(it = Pre[s].begin(); it != Pre[s].end(); it++){
-        temp.push((*it));
-        //DFS((*it), happy+happiness[(*it)]);
-        DFS((*it), happy+happiness[s]);
-        temp.pop();
-    }
-}
-
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-    cin >> n >> k >> start;
-    str2int[start] = 0;
-    int2str[0] = start;
-    string locate;
-    for(int i=1; i<=n-1; i++){
-        cin >> locate >> happiness[i];
-        str2int[locate] = i;
-        int2str[i] = locate;
-    }
-    for(int i=0; i<k; i++){
-        //string locate1, locate2, dist;
-        string locate1, locate2;
-        int dist;
-        cin >> locate1 >> locate2 >> dist;
-        int v1 = str2int[locate1], v2 = str2int[locate2];
-        Adj[v1].push_back(Node(v2,dist));
-        Adj[v2].push_back(Node(v1,dist));
-    }
-
-    Dijkstra();
-    temp.push(str2int["ROM"]);
-    DFS(str2int["ROM"], 0);
-
-    printf("%d %d %d %d\n",routeNum,dist[str2int["ROM"]],maxHappy,maxAvgHappy);
-    int v = path.top(); path.pop();
-    cout << int2str[v];
-    while(!path.empty()){
-        v = path.top(); path.pop();
-        cout << "->" << int2str[v];
-    }
-}
-```
-
-错误分析：
-
-1. 细节错误：带有空注释的那一块
-
-# *A1089 Insert or Merge
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-/*
-判断是否是归并排序的思路：若n=10, 从step=8,4,2,1总找到一个最大的step,使得每step个元素都满足
-以下两个条件：1.是排序好的 2.Num里对应区间的元素与PartSortNum中对应区间的元素是一个集合的。
-O(nlogn)
-*/
-#include<cstdio>
-#include<set>
-using namespace std;
-
-/*
-基本思路：判断是否是归并排序，但我的算法涉及到多个排序判别和集合相等判别，复杂度很高
-*/
-const int MAXN = 105;
-int n;
-int Num[MAXN], PartSortNum[MAXN];
-
-bool isSort(int i, int j){ //判断PartSortNum[i]--[j]是否已经排序好
-    if(i == j)
-        return true;
-    int k = i+1;
-    while(k <= j){
-        if(PartSortNum[k] < PartSortNum[k-1])
-            return false;
-        k++;
-    }
-    return true;
-}
-bool isSame(int i, int j){ //判断PartSortNum[i]--[j]与Num[i]--[j]的元素的集合是否一样
-    set<int> s1,s2;
-    for(int k=i; k<=j; k++){
-        s1.insert(Num[k]);
-        s2.insert(PartSortNum[k]);
-    }
-    //s1.erase(s2.begin(),s2.end());
-    set<int>::iterator it;
-    for(it = s2.begin(); it != s2.end(); it++){
-        s1.erase((*it));
-    }
-    if(s1.empty()){
-        return true;
-    }else{
-        return false;
-    }
-}
-int isMergeSort(){ //判断是否为merge sort, 若是，则返回step，若不是，返回-1
-    int step = 1;
-    while(step*2 <= n)
-        step *= 2;
-    while(step >= 1){
-        int i = 0;
-        bool flag = true; //是否断定为merge sort
-        while(i < n){
-            int j = i+step-1 < n ? i+step-1 : n-1;
-            if(!(isSort(i,j) && isSame(i,j))){
-                flag = false;
-                break;
-            }
-            i = j + 1;
-        }
-        if(flag){
-            return step;
-        }
-        step = step/2;
-    }
-    return -1;
-}
-void Merge(int a, int b, int c){
-    int* temp = new int[c-a+1];
-    int k = 0, i = a, j = b+1;
-    while(i<=b && j<=c){
-        if(PartSortNum[i] <= PartSortNum[j]){
-            temp[k] = PartSortNum[i];
-            i++;
-        }else{
-            temp[k] = PartSortNum[j];
-            j++;
-        }
-        k++;
-    }
-    if(i <= b){
-        while(i <= b){
-            temp[k] = PartSortNum[i];
-            i++;
-            k++;
-        }
-    }else if(j <= c){
-        while(j <= c){
-            temp[k] = PartSortNum[j];
-            j++;
-            k++;
-        }
-    }
-
-    k = 0;
-    i = a;
-    while(i <= c){
-        PartSortNum[i] = temp[k];
-        k++;
-        i++;
-    }
-}
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-
-    scanf("%d",&n);
-    for(int i=0; i<n; i++){
-        scanf("%d",&Num[i]);
-    }
-    for(int i=0; i<n; i++){
-        scanf("%d",&PartSortNum[i]);
-    }
-
-    int step = isMergeSort();
-    if(step != -1){
-        int a=0, b, c;
-        while(a < n){
-            b = a + step - 1;
-            if(b < n-1){
-                c = b + step < n ? b + step : n-1;
-                Merge(a,b,c);
-                a = c + 1;
-            }else{
-                break;
-            }
-        }
-        //输出
-        printf("Merge Sort\n");
-        for(int i=0; i<n; i++){
-            if(i == 0){
-                printf("%d",PartSortNum[i]);
-            }else{
-                printf(" %d",PartSortNum[i]);
-            }
-        }
-    }else{
-        if(n == 1){
-            printf("%d",PartSortNum[0]);
-        }else{
-            int i = 1; //默认n>1
-            while(i < n && PartSortNum[i] >= PartSortNum[i-1]){
-                i++;
-            }
-            int temp = PartSortNum[i];
-            while(i-1 >= 0 && temp < PartSortNum[i-1]){
-                PartSortNum[i] = PartSortNum[i-1];
-                i--;
-            }
-            PartSortNum[i] = temp;
-            //输出
-            printf("Insertion Sort\n");
-            for(i=0; i<n; i++){
-                if(i == 0){
-                    printf("%d",PartSortNum[i]);
-                }else{
-                    printf(" %d",PartSortNum[i]);
-                }
-            }
-        }
-    }
-}
-
-//错误分析：
-//1. 语法错误: 30行中对set.erase()的用法错了
-
-```
-
-错误分析:
-
-1. 语法错误: 30行中对set.erase()的用法错了。不应该set1.erase(set2.begin())，对set1的删除不能用set2的迭代器
-
-# A1092 To Buy or Not to Buy
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-/*
-基本思路：用数组Num记录eva想要的颜色及其个数，然后访问商店的str，
-若遍历一个char，则让相应的Num值减1
-*/
-#include<cstdio>
-using namespace std;
-
-char str1[1005];
-char str2[1005];
-int Num[125] = {0} ; //96+26 = 122
-int more = 0, les = 0;
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%s",&str1);
-    scanf("%s",&str2);
-
-    int i = 0;
-    while(str2[i] != '\0'){
-        Num[str2[i]]++;
-        i++;
-    }
-    i = 0;
-    while(str1[i] != '\0'){
-        --Num[str1[i]];
-        i++;
-    }
-
-    bool yes = true;
-    for(i=0; i<125; i++){
-        if(Num[i] > 0){
-            yes = false;
-            les += Num[i];
-        }else if(Num[i] < 0){
-            more += -Num[i];
-        }
-    }
-    if(yes){
-        printf("Yes %d\n",more);
-    }else{
-        printf("No %d\n",les);
-    }
-}
-```
-
-# A1093 count PAT's
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-/*
-基本思路：记录前i个字符中存在p的个数，PA的个数，PAT的个数
-*/
-#include<cstdio>
-using namespace std;
-
-const int MAXN = 1e5+5;
-char str[MAXN];
-long long ps[MAXN] = {0};
-long long as[MAXN] = {0};
-long long ts[MAXN] = {0};
-
-int main(){
-    //freopen("D:\\input.txt","r",stdin);
-    scanf("%s",&str);
-
-    int i = 0;
-    while(str[i] != '\0'){
-        if(i == 0){
-            if(str[i] == 'P'){
-                ps[i]++;
-            }
-        }else{
-            if(str[i] == 'P'){
-                ps[i] = ps[i-1] + 1;
-                as[i] = as[i-1];
-                ts[i] = ts[i-1];
-            }else if(str[i] == 'A'){
-                ps[i] = ps[i-1];
-                as[i] = ps[i-1] + as[i-1];
-                ts[i] = ts[i-1];
-            }else if(str[i] == 'T'){
-                ps[i] = ps[i-1];
-                as[i] = as[i-1];
-                ts[i] = ts[i-1] + as[i-1];
-            }
-        }
-        i++;
-    }
-
-    printf("%d",ts[i-1]%1000000007);
-}
-```
-
-错误分析：
-
-1. 由于结果可能很大，所以要用long long，而不是int
-
-# A1095 Cars on Campus
-
-```cpp
-struct Node{
-    string id;
-    int inTime; //second
-    int outTime; //second
-    int interval;
-    Node(){id = ""; inTime = outTime = -1; interval = -1;}
-};
-int n,k;
-Node cars[MAXN] = {Node()};
-map<string,int> string2int;
-int num = 0; //每遇到一个不同的车，就建立车id与num的map，然后num++
-
-bool Comp(Node a, Node b){
-    if(b.inTime == -1){
-        return true;
-    }else if(a.inTime == -1){
-        return false;
-    }else{
-        return a.inTime < b.inTime;
-    }
-}
-bool Comp2(Node a, Node b){
-    if(b.interval == -1){
-        return true;
-    }else if(a.interval == -1){
-        return false;
-    }else{
-        return a.interval > b.interval;
-    }
-}
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-
-    scanf("%d %d\n",&n,&k);
-    char id[10], inOut[10];
-    int hh,mm,ss;
-    for(int i=0; i<n; i++){
-        scanf("%s %d:%d:%d %s",&id,&hh,&mm,&ss,&inOut);
-        if(string2int.find(id) != string2int.end()){
-            int index = string2int[id];
-            int time = hh*3600 + mm*60 + ss;
-            if(strcmp(inOut,"in") == 0){
-                cars[index].inTime = time;
-                if(cars[index].outTime != -1){
-                    cars[index].interval = cars[index].outTime - cars[index].inTime;
-                }
-            }else{
-                cars[index].outTime = time;
-                if(cars[index].inTime != -1){
-                    cars[index].interval = cars[index].outTime - cars[index].inTime;
-                }
-            }
-        }else{
-            cars[num].id = id;
-            int time = hh*3600 + mm*60 + ss;
-            if(strcmp(inOut,"in") == 0){
-                cars[num].inTime = time;
-            }else{
-                cars[num].outTime = time;
-            }
-            string2int[id] = num;
-            num++;
-        }
-    }
-
-    sort(cars,cars+num,Comp); //按照outTime排序，outTime不合法的排在后面
-
-    //看每个时间点都有多少车在停车, 遍历每个Node, 找在这个时间点之前in和在这个时间点后out的车
-    int qhh,qmm,qss;
-    for(int i=0; i<k; i++){
-        scanf("%d:%d:%d",&qhh,&qmm,&qss);
-        int query = qhh*3600 + qmm*60 + qss;
-        int cnt = 0;
-        for(int j=0; j<num; j++){
-            if(cars[j].inTime != -1 && cars[j].inTime < query && cars[j].outTime > query){
-                cnt++;
-            }else if(cars[j].inTime == -1 || cars[j].inTime >= query){
-                break;
-            }
-        }
-        printf("%d\n",cnt);
-    }
-
-    sort(cars,cars+num,Comp);
-    int temp = cars[0].interval;
-    for(int i=0; i<num; i++){
-        if(cars[i].interval != temp){
-            break;
-        }
-        if(i == 0){
-            cout << cars[i].id;
-        }else{
-            cout << " " << cars[i].id;
-        }
-    }
-    printf(" %02d:%02d:%02d\n",temp/3600, (temp%3600)/60, (temp%3600)%60);
-}
-
-```
-
-这种做法的设计不好，没有考虑同一个人可能有不止一个in记录，不止一个out记录，同时可能有不止一个in/out pair对
-
-```cpp
-/*
-基本思路：这题是考栈的应用的，先把Record按照id,time进行排序，顺便建立id到int的map，
-然后从第一个记录遍历到最后一个记录：考虑record和其id对应的栈，若和栈内的元素都为in，则弹栈，压入这个record，并考虑更新各个时间点的停车数量；
-若此元素为为out，则不考虑；若栈内元素为in，此元素为out，则弹栈，更新最大停车时间，更新各个时间点的停车数量
-*/
-#include<cstdio>
-#include<string>
-#include<cstring>
-#include<map>
-#include<set>
-#include<stack>
-#include<algorithm>
-#include<iostream>
-using namespace std;
-
-const int MAXN = 1e4+5;
-const int MAXK = 8e4+5;
-
-struct Rec{
-    string id;
-    int time;
-    bool in; //是否是in
-};
-int n,k;
-Rec recs[MAXN];
-int queries[MAXK];
-map<string,int> str2int;
-int num = 0; //记录不同姓名的个数
-stack<int> stks[MAXN/2]; //不同用户对应的栈, 压入的是recs下标
-int parks[MAXK] = {0}; //queries[i]时间点的停车数量
-int intervals[MAXN/2] = {0}; //记录各个人的总停车时间
-
-bool Comp(Rec a, Rec b){
-    if(a.id == a.id){
-        return a.time < b.time;
-    }else{
-        return a.id < b.id;
-    }
-}
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-
-    scanf("%d %d",&n,&k);
-    char id[10], inOut[10];
-    int hh, mm, ss;
-    for(int i=0; i<n; i++){
-        scanf("%s %d:%d:%d %s",&id,&hh,&mm,&ss,&inOut);
-        recs[i].id = id;
-        recs[i].time = hh*3600 + mm*60 + ss;
-        if(strcmp(inOut,"in") == 0){
-            recs[i].in = true;
-        }else{
-            recs[i].in = false;
-        }
-        if(str2int.find(id) == str2int.end()){
-            str2int[id] = num;
-            num++;
-        }
-    }
-    sort(recs, recs+n, Comp);
-    for(int i=0; i<k; i++){
-        scanf("%d:%d:%d",&hh,&mm,&ss);
-        queries[i] = hh*3600 + mm*60 + ss;
-    }
-
-    int maxInterval = -1; //要和每个人的停车总时间比较，比如：5:10:33-12:23:42 18:00:01--18:07:01的总和是7:20:09
-    set<string> se; //保存最大停车时间的车的id
-    for(int i=0; i<n; i++){
-        int idNum = str2int[recs[i].id]; //id对应的num
-        if(stks[idNum].empty()){
-            if(recs[i].in == true){
-                stks[idNum].push(i);
-                for(int j=0; j<k; j++){
-                    if(recs[i].time <= queries[j]){ //边界问题
-                        parks[j]++;
-                    }
-                }
-            }
-        }else{
-            int recsIndex = stks[idNum].top();
-            if(recs[recsIndex].in == true && recs[i].in == true){
-                stks[idNum].pop();
-                stks[idNum].push(i);
-                for(int j=0; j<k; j++){
-                    /*if(queries[j] > recs[recsIndex].time && queries[j] <= recs[i].time){ //边界问题
-                        parks[j]++;
-                    }*/
-                    if(recs[recsIndex].time <= queries[j]){
-                        parks[j]--;
-                    }
-                    if(recs[i].time <= queries[j]){
-                        parks[j]++;
-                    }
-                }
-            }else if(recs[recsIndex].in == true && recs[i].in == false){
-                stks[idNum].pop();
-                int interval = recs[i].time - recs[recsIndex].time;
-                intervals[idNum] += interval;
-                if(intervals[idNum] > maxInterval){
-                    maxInterval = intervals[idNum];
-                    se.clear();
-                    se.insert(recs[i].id);
-                }else if(intervals[idNum] == maxInterval){
-                    se.insert(recs[i].id);
-                }
-                for(int j=0; j<k; j++){
-                    if(recs[i].time <= queries[j]){ //边界问题
-                        parks[j]--;
-                    }
-                }
-            }
-        }
-    }
-    for(int i=0; i<num; i++){
-        if(!stks[i].empty()){
-            int index = stks[i].top(); stks[i].pop();
-            for(int j=0; j<k; j++){
-                if(recs[index].time < queries[j]){
-                    parks[j]--;
-                }
-            }
-        }
-    }
-
-    //输出
-    for(int i=0; i<k; i++){
-        printf("%d\n",parks[i]);
-    }
-    set<string>::iterator it;
-    for(it = se.begin(); it != se.end(); it++){
-        cout << (*it) << " ";
-    }
-    printf("%02d:%02d:%02d\n",maxInterval/3600, (maxInterval%3600)/60, (maxInterval%3600)%60);
-}
-```
-
-错误分析：
-
-1. 业务逻辑错误：85到87行：若在5:00:00 in了一个车，在6:00:00又In了同一辆车，则考虑把由于5:00:00点in的车导致的各个时间点的停车数量的更新撤销掉
-2. 运行超时：以前是一遇到一个record就更新parks，时间复杂度为O(1e4 * 8e4)，但是，只在遇到一对pair时进行更新，可以大大降低时间复杂度
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-/*
-基本思路：这题是考栈的应用的，先把Record按照id,time进行排序，顺便建立id到int的map，
-然后从第一个记录遍历到最后一个记录：考虑record和其id对应的栈，若和栈内的元素都为in，则弹栈，压入这个record，并考虑更新各个时间点的停车数量；
-若此元素为为out，则不考虑；若栈内元素为in，次元素为out，则弹栈，更新最大停车时间，更新各个时间点的停车数量
-*/
-#include<cstdio>
-#include<string>
-#include<cstring>
-#include<map>
-#include<set>
-#include<stack>
-#include<algorithm>
-#include<iostream>
-using namespace std;
-
-const int MAXN = 1e4+5;
-const int MAXK = 8e4+5;
-
-struct Rec{
-    string id;
-    int time;
-    bool in; //是否是in
-};
-int n,k;
-Rec recs[MAXN];
-int queries[MAXK];
-map<string,int> str2int;
-int num = 0; //记录不同姓名的个数
-stack<int> stks[MAXN/2]; //不同用户对应的栈, 压入的是recs下标
-int parks[MAXK] = {0}; //queries[i]时间点的停车数量
-int intervals[MAXN/2] = {0}; //记录各个人的总停车时间
-
-bool Comp(Rec a, Rec b){
-    if(a.id == a.id){
-        return a.time < b.time;
-    }else{
-        return a.id < b.id;
-    }
-}
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-
-    scanf("%d %d",&n,&k);
-    char id[10], inOut[10];
-    int hh, mm, ss;
-    for(int i=0; i<n; i++){
-        scanf("%s %d:%d:%d %s",&id,&hh,&mm,&ss,&inOut);
-        recs[i].id = id;
-        recs[i].time = hh*3600 + mm*60 + ss;
-        if(strcmp(inOut,"in") == 0){
-            recs[i].in = true;
-        }else{
-            recs[i].in = false;
-        }
-        if(str2int.find(id) == str2int.end()){
-            str2int[id] = num;
-            num++;
-        }
-    }
-    sort(recs, recs+n, Comp);
-    for(int i=0; i<k; i++){
-        scanf("%d:%d:%d",&hh,&mm,&ss);
-        queries[i] = hh*3600 + mm*60 + ss;
-    }
-
-    int maxInterval = -1; //要和每个人的停车总时间比较，比如：5:10:33-12:23:42 18:00:01--18:07:01的总和是7:20:09
-    set<string> se; //保存最大停车时间的车的id
-    for(int i=0; i<n; i++){
-        int idNum = str2int[recs[i].id]; //id对应的num
-        if(stks[idNum].empty()){
-            if(recs[i].in == true){
-                stks[idNum].push(i);
-            }
-        }else{
-            int recsIndex = stks[idNum].top();
-            if(recs[recsIndex].in == true && recs[i].in == true){
-                stks[idNum].pop();
-                stks[idNum].push(i);
-            }else if(recs[recsIndex].in == true && recs[i].in == false){
-                stks[idNum].pop();
-                int interval = recs[i].time - recs[recsIndex].time;
-                intervals[idNum] += interval;
-                if(intervals[idNum] > maxInterval){
-                    maxInterval = intervals[idNum];
-                    se.clear();
-                    se.insert(recs[i].id);
-                }else if(intervals[idNum] == maxInterval){
-                    se.insert(recs[i].id);
-                }
-                for(int j=0; j<k; j++){
-                    if(queries[j] >= recs[recsIndex].time && queries[j] < recs[i].time){ //边界问题
-                        parks[j]++;
-                    }
-                }
-            }
-        }
-    }
-
-    //输出
-    for(int i=0; i<k; i++){
-        printf("%d\n",parks[i]);
-    }
-    set<string>::iterator it;
-    for(it = se.begin(); it != se.end(); it++){
-        cout << (*it) << " ";
-    }
-    printf("%02d:%02d:%02d\n",maxInterval/3600, (maxInterval%3600)/60, (maxInterval%3600)%60);
-}
-```
-
-对运行时间进行了优化，其中有一个测试点以280ms的时间过了，narrow pass
-
-# *A1097 Deduplication on a Linked List
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-#include<set>
-#include<vector>
-using namespace std;
-
-struct Node{
-    int addr, data, nextAddr;
-    Node(){addr = -1;}
-};
-const int MAXN = 100005;
-int head, n;
-Node llist[MAXN] = {Node()};
-
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-    scanf("%d %d\n",&head,&n);
-    int addr, data, nextAddr;
-    for(int i=0;i<n;i++){
-        scanf("%d %d %d",&addr,&data,&nextAddr);
-        llist[addr].addr = addr;
-        llist[addr].data = data;
-        llist[addr].nextAddr = nextAddr;
-    }
-
-    set<int> se; //存放已经出现在链表中的元素
-    vector<Node> removed; //存放已删除的元素
-    addr = head;
-    int pre;
-    while(addr != -1){
-        if(addr == head){
-            se.insert(llist[addr].data);
-            pre = addr;
-            addr = llist[addr].nextAddr;
-        }else{
-            if(se.find(llist[addr].data) != se.end() || se.find(-llist[addr].data) != se.end()){ //有重复元素
-                //删除操作
-                llist[pre].nextAddr = llist[addr].nextAddr;
-                removed.push_back(llist[addr]);
-                addr = llist[addr].nextAddr;
-            }else{
-                se.insert(llist[addr].data);
-                pre = addr;
-                addr = llist[addr].nextAddr;
-            }
-        }
-    }
-
-    //输出
-    addr = head;
-    while(addr != -1){
-        if(llist[addr].nextAddr != -1)
-            printf("%05d %d %05d\n",llist[addr].addr,llist[addr].data,llist[addr].nextAddr);
-        else
-            printf("%05d %d -1\n",llist[addr].addr,llist[addr].data);
-        addr = llist[addr].nextAddr;
-    }
-    if(removed.size() != 0){
-        vector<Node>::iterator it;
-        for(it=removed.begin(); it != removed.end(); it++){
-            if(it == removed.begin())
-                printf("%05d %d ",(*it).addr,(*it).data);
-            else{
-                printf("%05d\n%05d %d ",(*it).addr,(*it).addr,(*it).data);
-            }
-        }
-        printf("-1\n");
-    }
-}
-
-//错误分析：
-//1. 细节错误：55行，对-1输出的特判; 58行，对vector空间的特判
-
-```
-
-错误分析：
-
-1. 细节错误：55行，对-1输出的特判; 58行，对vector空间的特判
-
-# A1098 Insertion or HeapSort
-
-```cpp
-//freopen("D:\\input.txt","r",stdin);
-#include<cstdio>
-using namespace std;
-
-const int MAXN = 105;
-
-int n; //数的个数
-int Num[MAXN];
-int PartSortNum[MAXN]; //部分排序的数组
-
-void DownAdjust(int a, int b){
-    int i = a, j = i*2+1;
-    while(j <= b){
-        if(j+1 <= b){
-            if(PartSortNum[j+1] > PartSortNum[j])
-                j = j+1;
-        }
-        if(PartSortNum[j] > PartSortNum[i]){
-            int temp = PartSortNum[i];
-            PartSortNum[i] = PartSortNum[j];
-            PartSortNum[j] = temp;
-            i = j;
-            j = i*2+1;
-        }else{
-            break;
-        }
-    }
-}
-int main(){
-    freopen("D:\\input.txt","r",stdin);
-    scanf("%d\n",&n);
-    for(int i=0;i<n;i++){
-        scanf("%d",&Num[i]);
-    }
-    for(int i=0;i<n;i++){
-        scanf("%d",&PartSortNum[i]);
-    }
-
-    bool flag = true; //标识是否是Insertion Sort
-    int i = 0;
-    for(i=0; i<n-1; i++){ //得到已经排序好的序列的后一个位置,如1 2 3 7 8 5 9 4 6 0 中的5
-        if(PartSortNum[i] > PartSortNum[i+1])
-            break;
-    }
-    i++;
-    for(int j=i; j<n; j++){
-        if(PartSortNum[j] != Num[j]){
-            flag = false;
-            break;
-        }
-    }
-
-    if(flag){ //如果是Insertion Sort
-        //多进行一步插入排序
-        if(i < n-1){
-            int temp = Num[i];
-            while(i > 0 && temp < PartSortNum[i-1]){
-                PartSortNum[i] = PartSortNum[i-1];
-                i--;
-            }
-            PartSortNum[i] = temp;
-        }
-        //输出
-        printf("Insertion Sort\n");
-        for(int j=0; j<n; j++){
-            if(j == 0){
-                printf("%d",PartSortNum[j]);
-            }else{
-                printf(" %d",PartSortNum[j]);
-            }
-        }
-    }else{ //如果是Heap Sort
-        //找到第二个序列最后排序好的连续子序列前面的为位置，如6 4 5 1 0 3 2 7 8 9中的2
-        int maxn = -1;
-        for(int j=0; j<n; j++){
-            if(Num[j] > maxn)
-                maxn = Num[j];
-        }
-        if(PartSortNum[n-1] != maxn){
-            i = n-1;
-        }else{
-            i = n-2;
-            while(i >= 0 && PartSortNum[i+1] == PartSortNum[i]+1)
-                i--;
-        }
-
-        //进行一步Heap Sort
-        int temp = PartSortNum[0];
-        PartSortNum[0] = PartSortNum[i];
-        PartSortNum[i] = temp;
-        DownAdjust(0,i-1);
-        //输出
-        printf("Heap Sort\n");
-        for(int j=0; j<n; j++){
-            if(j == 0){
-                printf("%d",PartSortNum[j]);
-            }else{
-                printf(" %d",PartSortNum[j]);
-            }
-        }
-    }
-}
+} 
 ```
 

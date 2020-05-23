@@ -513,7 +513,92 @@ while(队列非空){
 }
 ```
 
+## 欧拉路
 
+如果一个无向图中有有n个结点，且度为偶数的结点数也为n，则该图含有欧拉回路；若有n个结点，且度为奇数的点的个数为2，则含有欧拉路；否则，不含有欧拉路
+
+# 数学运算
+
+## 分数运算
+
+**最大公约数**
+
+```cpp
+//由离散数学：a与b的公约数与b与a%b的公约数相等
+int gcd(int a,int b){
+    if(b==0)return a;
+    else return gcd(b,a%b);
+}
+```
+
+**最小公倍数**
+
+```cpp
+int lcm(int a,int b){
+    //return a*b/gcd(a,b);
+    //由于a*b有可能溢出，所以更好的写法是下面的
+	return a/gcd(a,b)*b;
+}
+```
+
+# Hash
+
+//平方探测法 quadratic probing
+
+```cpp
+#ifndef HashQuad_h
+#define HashQuad_h
+typedef unsigned int Index;
+typedef Index Position;
+struct HashTb1;
+typedef struct HashTb1 *HashTable;
+
+HashTable Init(int size);
+void DestroyTable(HashTable H);
+void Insert(int key, HashTable H);
+Position Find(int key,HashTable H);
+int Retrieve(Position P);
+HashTable ReTable(HashTable H);
+#endif /* HashQuad_h */
+
+enum KindOfEntry{
+    Legitimate,
+    Empty,
+    Deleted
+};
+
+struct HashEntry {
+    int value;
+    enum KindOfEntry Info;
+};
+
+typedef struct HashEntry Cell;
+
+/*Cell *TheCells will be an array of 
+ HashEntry cells,allocated later
+ */
+struct HashTb1 {
+    int TableSize;
+    Cell *TheCells;
+};
+```
+
+```cpp
+//利用 i*i = (i-1)*(i-1) + 2*i - 1
+1 Position Find(int key,HashTable H){
+ 2     Position cur;
+ 3     int CollisionNum=0;
+ 4     cur=Hash(key,H->TableSize);
+ 5     while (H->TheCells[cur].Info != Empty &&
+ 6            H->TheCells[cur].value!= key)
+ 7     {
+ 8         cur+= (++CollisionNum<<1) - 1;
+ 9         if (cur>=H->TableSize)
+10             cur-=H->TableSize;
+11     }
+12     return cur;
+13 }
+```
 
 
 

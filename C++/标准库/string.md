@@ -64,6 +64,17 @@ void SplitString(const string& s,const string& c,vector<string>& v){
 
 ```
 
+**可以用getline和stringstream分割字符串**
+
+```cpp
+stringstream ss="///5"
+string s;
+while(getline(ss,s,'/')){
+    cout<<s<<"#";
+}
+//out: ###5
+```
+
 # string的比较
 
 慎用string.compare()函数
@@ -75,5 +86,34 @@ s2 = "124";
 if(s1 < s2)
 	printf("yes");
 //out:yes
+```
+
+# 查找
+
+```cpp
+string str = "163456"
+int k1 = str.find('6',2); //out:5
+str = "zhou zhou";
+k1 = str.find("zhou",2); //out:5
+```
+
+# 插入
+
+```cpp
+string s;
+s.insert(2,'a');
+s.insert(2,"aa");
+s.insert(s.begin()+2,"a");
+```
+
+![image-20200410104409201](image/image-20200410104409201.png)
+
+# 删除
+
+```cpp
+str.erase(5); //删除从5开始到末尾的字符
+str.erase(5,4); //删除从5开始的4个字符
+str.erase(str.begin()+2); //删除从2开始到末尾的字符
+str.erase(str.begin()+2,str.begin()+4); //删除从2,3处的字符
 ```
 

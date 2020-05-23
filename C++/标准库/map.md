@@ -22,7 +22,7 @@
 map<int, int> mp;
 mp[0] = 0;
 
-mp.insert(make_pair(1, 1));
+pair<map<int,int>::iterator,bool> res=mp.insert(make_pair(1, 1)); 
 
 map<int,int>::iterator beg, end;
 mp.insert(beg,end);
@@ -84,5 +84,10 @@ int main(){
 //comparator需要是strict weak ordering，需要注意的是，comparator(x,x)必须返回false。
 ```
 
+## 查找
 
+```cpp
+map<int,int> mp;
+map<int,int>::iterator it = mp.find(9);
+```
 

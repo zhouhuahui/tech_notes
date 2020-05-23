@@ -1,3 +1,12 @@
+# C语法
+
+1. int main(int argc, char* argv[]);
+2. return 0;
+3. 不能用for(int i=0;i<n;i++)的形式，只能int i=0; for(i=0;i<n;i++);
+4. 没有构造函数
+5. const int MAXN=500; int a[MAXN]的写法是错误的，要用: #define MAXN 500
+6. 系统自带的scanf不支持long long型
+
 # 强制类型转换
 
 在向上强制转换过程中，使用指针和引用不会造成切割，而使用直接赋值会造成切割。
@@ -89,66 +98,6 @@ public:
 //-------------------------------------------------------
 ```
 
-
-
-# algorithm
-
-## sort
-
-使用algorithm中的sort方法可以高效排序，默认升序。
-
-```cpp
-#include<algorithm>
-using namespace std;
-int main(){
-    int a[10] = { 9, 0, 1, 2, 3, 7, 4, 5, 100, 10 };
-    sort(a, a +10);
-    for (int i = 0; i < 10; i++)
-        cout << a[i] << endl;
-    return 0;
-}
-```
-
-```cpp
-//用sort对vector进行排序
-#include<algorithm>
-vector<int> a;
-//插入值
-sort(a.begin(), a.end());
-```
-
-```cpp
-//自定义的结构体排序
-#include<algorithm>
-//从小到大排序
-bool comp(const student &a, const student &b){
-    return a.score < b.score;
-}
-int main(){
-	vector<student> vectorStudents;
-    //插入值    	
-  	sort(vectorStudents.begin(),vectorStudents.end(),comp);
-    
-}
-```
-
-## count
-
-```cpp
-vector<string> vStr;
-int nRet = std::count(vStr.begin(), vStr.end(), "xiaochun");
-```
-
-# cmath
-
-```cpp
-#include<cmath>
-using namespace std;
-round(); //返回浮点数，四舍五入
-```
-
-
-
 # 字符串与数字/浮点数的转换
 
 **字符串转数字**
@@ -166,6 +115,11 @@ int a;
 sscanf(str,"%x",&a); //16进制转10进制
 ```
 
+```cpp
+#include<cstring>
+stoi(str,0,2); //将str从0开始的2进制数转化为10进制数
+```
+
 **数字转字符串**
 
 ```cpp
@@ -177,6 +131,11 @@ sprintf(str,"%d",a);
 char str[10];
 double a = 123.331;
 sprintf(str,"%.3lf",a);
+
+//C++11标准
+string to_string(int value);
+string to_string(long long value);
+string to_string(double value);
 ```
 
 # c/c++的输入输出流
@@ -213,7 +172,7 @@ gets(s); //过滤掉\n
 gets(s);
 ```
 
-**PAT中不能用gets了，只能用fgets**
+**PAT中不能用gets了，只能用fgets读取一行**
 
 ```cpp
 #include <stdio.h>
@@ -223,18 +182,162 @@ char *fgets(char *s, int size, FILE *stream); //size是自定义读入字符的�
 //如果size=3，而输入为abc\n，则缓冲区为ab\0
 ```
 
+**getline()**
 
+```cpp
+string str;
+getline(cin,str); //得到一行
+```
 
 读取字符时慎用scanf，用cin
 
 ```cpp
 char c;
-c = cin.get();
+c = cin.get(); //c++写法
 //可以读取换行符
+c=getc(stdin); //c语言写法
 ```
 
 ```cpp
 char s[20];
 cin.get(s,5); //除了'\0'，只能读取4个字符
 ```
+
+**其他应用**
+
+```cpp
+//scanf读入16进制数
+int a;
+scanf("%x",&a);
+
+//sscanf读入16进制数
+string str = "a";
+int a;
+sscanf(str,"%x",&a);
+```
+
+```cpp
+//输出16进制数
+int a=10;
+printf("%x",a); //out:a
+printf("%X",a); //out:A
+
+char c = '[';
+printf("\\x%02X",c); //输出16进制的ASCII码
+```
+
+**cout的使用**
+
+
+
+---
+
+**常量指针与指针常量**
+
+常量指针：指针指向的值不可变
+
+指针常量：指针不可变
+
+```cpp
+typedef char * pchar;
+char str1[4]="abc";
+char str2[4]="def";
+const char *p1 = str1; //p1为常量指针
+const pchar p2 = str2; //p2为指针常量
+```
+
+**常函数**：C++中不能对成员变量进行修改的成员函数
+
+**new与malloc的区别**
+
+```
+0. 属性
+new/delete是C++关键字，需要编译器支持;malloc/free是库函数，需要头文件支持
+1. 参数
+使用new申请内存时无需指定内存块大小，而malloc需要指定内存块大小
+2. 返回值
+new会返回对象类型的指针，而malloc返回void*，需要用户强制类型转换为对象类型的指针。
+3. 分配失败
+new分配失败时会抛出异常，而malloc分配失败时会返回NULL
+4. new会先申请内存，然后调用对象的构造函数，delete会先调用对象的析构函数，然后再释放内存。
+5. new从自由存储区上动态分配内存，malloc从堆上动态分配内存。
+```
+
+**C++虚函数机制**
+
+在实例化的对象的头部是指向虚函数表的指针，虚函数表里存放每个虚函数的地址，对于动态类型为子类的实例，其相应的虚函数指针为指向子类虚函数的指针，而不是父类的，所以动态类型为子类和父类的，其虚函数表不同，以此实现多态。
+
+# C语言文件操作
+
+**以字符形式读写文件**
+
+```cpp
+File* file=fopen("./test.txt","r");
+char c = fgetc(file); //c==EOF表示到达文件尾
+```
+
+**文件指针移动**
+
+函数原型
+
+```cpp
+int fseek(FILE* stream, long offset, int origin);
+```
+
+第一个参数stream为文件指针，复第二个offset为偏移，比如你要从文件的第10000个字节开始读取的话制，offset就应该为10000，origin 为标志是从文件开始还是末尾。
+第三个origin 的取值表示移动类型,
+SEEK_CUR Current position of [file](https://www.baidu.com/s?wd=file&tn=SE_PcZhidaonwhc_ngpagmjz&rsv_dl=gh_pc_zhidao) pointer
+SEEK_END End of [file](https://www.baidu.com/s?wd=file&tn=SE_PcZhidaonwhc_ngpagmjz&rsv_dl=gh_pc_zhidao)
+SEEK_SET Beginning of file即表示移动类型,分别百代表:当前位置,文件尾,文件头度;
+第二个参数正数表示正向偏移，负数表示负向偏移，比如
+
+```cpp
+fseek(fp,-1,SEEK_CUR);
+```
+
+**写文件**
+
+```cpp
+FILE* pFile = fopen("01.txt", "w");
+char* str = "C语言";
+//fwrite(str, sizeof(char), strlen(str)+1, pFile);
+	
+//fwrite的返回值，0写入失败 ， 成功返回字符个数*字符大小
+int a = fwrite(str, sizeof(char), strlen(str), pFile);
+fclose(pFile);//jijiu
+
+//fwrite有个弊端，就是只能写一次，后面的fwrite操作就没用了
+```
+
+```cpp
+fputs("ss",file); 
+//可以累加地写
+```
+
+# 枚举类型
+
+```cpp
+/**定义枚举类型*/
+enum weekday{sun, mon, tue, wed, thu, fri, sat};
+```
+
+```cpp
+//声明枚举类型变量today
+enum weekday today = sun;
+```
+
+```cpp
+//枚举类型可以用于二维表，如，每个星期吃什么套餐
+map<string,weekday> weekdayMap={{"sun",sun}, ...}; //定义string到weekday的映射
+int a[7];
+a[weekdayMap["sun"]] = 1; //星期日吃1号套餐
+```
+
+# 左移
+
+```cpp
+1<<5; //2的5次方
+```
+
+
 

@@ -1695,3 +1695,9 @@ https://mosucloud.best/cart.php?a=view
 极客云(Clash)：https://geekcloud1.ml/user/tutorial?os=windows&client=cfw
 https://mahongfei.com/1712.html
 https://gkercloud.com/user
+
+----
+
+2020年5月7日
+
+http://weimaisi.xyz/#/user/panel

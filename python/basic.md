@@ -198,6 +198,13 @@ import os
 print(os.listdir("D:\pyproject\day21模块"))
 ```
 
+# bytes
+
+```python
+#bytes转str
+s = str(b, encoding='utf-8')
+```
+
 
 
 # str
@@ -281,6 +288,13 @@ img_fname = fname_fn("image1")
 
 lambda的格式是：``lambda argument_list:expression``    
 argument_list是输入，expression是输出
+
+# 读取文件
+
+```python
+with open("test.txt","r") as f:
+    list1 = f.readlines();
+```
 
 
 
